@@ -1,0 +1,85 @@
+WHAT I WANT YOU TO DO?
+-------------------------
+
+- I want you to build a great modern looking UI analytics and observability application which runs on top of Snowflake. It tracks user and token-based activities, query metrics, resource consumption, security roles, and provide insights like most expensive queries, object usage (READ/MODIFY), and lineage tracking.
+- So build the application with modern great fascinating, awesome looking and appealing application and deploy it on the internet and finally share me the link
+- Do not ask more questions to me, just do whatever you feel is okay for you and share me the final deployed url
+- For human users use these names: AMITP, API_USER, DEV_USER, VMAMIDI
+- For NHI: SB_INTEGRATION, DEV_TESTING, APP_INTEGRATION
+
+
+
+IN DEPTH DESCRIPTION FOR EACH SECTIONS:
+-------------------------------------------
+
+## ** Overview of Snowflake Identities**
+- User and NHIs
+- Tabular columns both sections: User Name/Identity Name	User Owner	Last Successful Login	Status	Authentication Method	Risk Level	Created On   
+- For NHI tabular view 
+    1. add one more section as USERNAME it contain the Human user name who is the owner of the token
+    2. Token type: OAUTH_ACCESS_TOKEN, PROGRAMMATIC_ACCESS_TOKEN
+- Note: Just create Analytics for only 1 user and NHI thats enough for demo purpose
+- Analytics about one user/nhi: 
+1. Query Metrics
+Total Queries Executed
+Average Query Duration
+Most used unique query types (eg: SELECT, INSERT)
+
+2. Data Access Patterns
+Distinct Databases Accessed
+Frequent Tables Accessed
+
+3. Resource Consumption
+Compute Credit Usage
+Warehouse Usage
+
+4. Security and Auditing
+Authentication Method
+Security Roles
+
+5. Roles and Permissions
+Unique Roles
+Unique Privileges (eg: SELECT, INSERT, CREATE SCHEMA, ....)
+
+
+
+## Users Activities track with usages
+
+- About: A user logged in at this time through an application using a IP address, assumed some roles, accessed some unique objects,  consumed some credits, fired some unique query types, total queries it fired, total byte it scanned
+
+- Have this section for both Human user and NHI 
+
+1. Session based: Activities between two successful login session.
+2. Day wise: What a user did on a given day (filter for 7, 15, 30 days)
+
+
+
+## Most Expensive Queries
+
+- About: Top 50 most expensive queries run in the last 7 days — telling us what was queried, who ran it, and how much it cost. It helps identify repeated queries that are consuming high resources, so we can optimize them and reduce costs.
+
+1. Grouped by query_hash
+    - columns to display: SAMPLE_QUERY_TEXT, USERS, ROLES, WAREHOUSES, TOTAL_EXECUTIONS, TOTAL_CREDITS_USED, TOTAL_MB_SCANNED, total_runtime_sec, FIRST_SEEN, LAST_SEEN
+2. Grouped by User + Role
+    - columns to display: ROLE_USED, TOTAL_EXECUTIONS, TOTAL_CREDITS_USED, TOTAL_MB_SCANNED, TOTAL_RUNTIME_SEC, FIRST_SEEN, LAST_SEEN
+3. Grouped by USER_NAME + ROLE_NAME + QUERY_HASH
+    -  columns to display: SAMPLE_QUERY_TEXT, TOTAL_EXECUTIONS, TOTAL_CREDITS_USED, TOTAL_MB_SCANNED, TOTAL_RUNTIME_SEC, FIRST_SEEN, LAST_SEEN
+
+
+
+## Usages around READ and MODIFY query types
+
+- Top accessed objects and how much credits does each one consumed through queries executions, who were the unique users., last_accessed_time, object types (eg: View, Table, procedures, functions etc..) 
+- Usage view for READ and MODIFY Queries (like INSERT, UPDATE)
+
+
+
+## Lineage back tracking (A representation about Who Depends on Me in a best design possible?)
+
+About: For a given object (eg: a Table) what all entities eg: 
+
+- Logical dependencies like VIEWS, FUNCTIONS, PROCEDURES etc depends and also,
+- FK Dependencies which talks about what all tables are dependent on the target Object through foreign key and via which constraint name
+- External Dependencies outside Snowflake’s scope eg: ETL pipelines, BI dashboards, ML jobs, external apps/tools
+- Who are the users accessing the object most (GROUP BY USER_NAME, ROLE_NAME, QUERY_TYPE)
+
