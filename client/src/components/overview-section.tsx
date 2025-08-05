@@ -4,12 +4,20 @@ import { Users, Coins, Search, Database, Eye, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { SnowflakeUser } from "@shared/schema";
 
+interface DashboardSummary {
+  totalUsers: number;
+  activeUsers: number;
+  totalCredits: string;
+  totalQueries: number;
+  totalDataScanned: string;
+}
+
 export default function OverviewSection() {
   const { data: users, isLoading: usersLoading } = useQuery<SnowflakeUser[]>({
     queryKey: ["/api/snowflake-users"],
   });
 
-  const { data: summary, isLoading: summaryLoading } = useQuery({
+  const { data: summary, isLoading: summaryLoading } = useQuery<DashboardSummary>({
     queryKey: ["/api/dashboard-summary"],
   });
 

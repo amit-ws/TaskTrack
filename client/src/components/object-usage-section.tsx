@@ -9,7 +9,7 @@ export default function ObjectUsageSection() {
   const [activeTab, setActiveTab] = useState("READ");
 
   const { data: objectUsage } = useQuery<ObjectUsage[]>({
-    queryKey: ["/api/object-usage", { operationType: activeTab }],
+    queryKey: ["/api/object-usage"],
   });
 
   const getObjectIcon = (objectType: string) => {
@@ -84,6 +84,10 @@ export default function ObjectUsageSection() {
     );
   };
 
+  const filteredUsage = objectUsage?.filter(obj => 
+    activeTab === "READ" ? obj.operationType === "READ" : obj.operationType !== "READ"
+  ) || [];
+
   return (
     <section className="space-y-6">
       <Card style={{ backgroundColor: "var(--slate-900)", borderColor: "var(--slate-700)" }}>
@@ -138,7 +142,7 @@ export default function ObjectUsageSection() {
                   </tr>
                 </thead>
                 <tbody style={{ color: "var(--slate-300)" }}>
-                  {objectUsage?.filter(obj => obj.operationType === "READ").map((usage) => (
+                  {filteredUsage.map((usage) => (
                     <tr key={usage.id} className="table-row" style={{ borderBottom: "1px solid var(--slate-800)" }}>
                       <td className="py-3">
                         <div className="flex items-center space-x-2">
@@ -187,7 +191,7 @@ export default function ObjectUsageSection() {
                   </tr>
                 </thead>
                 <tbody style={{ color: "var(--slate-300)" }}>
-                  {objectUsage?.filter(obj => obj.operationType !== "READ").map((usage) => (
+                  {filteredUsage.map((usage) => (
                     <tr key={usage.id} className="table-row" style={{ borderBottom: "1px solid var(--slate-800)" }}>
                       <td className="py-3">
                         <div className="flex items-center space-x-2">

@@ -8,18 +8,18 @@ export default function ExpensiveQueriesSection() {
   const [activeTab, setActiveTab] = useState("query_hash");
 
   const { data: queryHashQueries } = useQuery<ExpensiveQueries[]>({
-    queryKey: ["/api/expensive-queries", { groupingType: "query_hash" }],
-    enabled: activeTab === "query_hash",
+    queryKey: ["/api/expensive-queries"],
+    select: (data) => data.filter(q => q.groupingType === "query_hash"),
   });
 
   const { data: userRoleQueries } = useQuery<ExpensiveQueries[]>({
-    queryKey: ["/api/expensive-queries", { groupingType: "user_role" }],
-    enabled: activeTab === "user_role",
+    queryKey: ["/api/expensive-queries"],
+    select: (data) => data.filter(q => q.groupingType === "user_role"),
   });
 
   const { data: userQueryQueries } = useQuery<ExpensiveQueries[]>({
-    queryKey: ["/api/expensive-queries", { groupingType: "user_query" }],
-    enabled: activeTab === "user_query",
+    queryKey: ["/api/expensive-queries"],
+    select: (data) => data.filter(q => q.groupingType === "user_query"),
   });
 
   const getCurrentData = () => {

@@ -2,8 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TrendingUp, Database, Shield, BarChart3 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import type { SnowflakeUser, UserAnalytics } from "@shared/schema";
+
+declare global {
+  interface Window {
+    Chart: any;
+  }
+}
 
 export default function UserAnalyticsSection() {
   const [selectedUserId, setSelectedUserId] = useState<string>("");
@@ -18,19 +24,20 @@ export default function UserAnalyticsSection() {
     enabled: !!selectedUserId,
   });
 
-  const humanUsers = users?.filter(user => !user.isNHI) || [];
+  // Include both human users AND NHI users
+  const allUsers = users || [];
 
   // Set default user when users are loaded
   useEffect(() => {
-    if (humanUsers.length > 0 && !selectedUserId) {
-      const amitpUser = humanUsers.find(u => u.userName === "AMITP");
+    if (allUsers.length > 0 && !selectedUserId) {
+      const amitpUser = allUsers.find(u => u.userName === "AMITP");
       if (amitpUser) {
         setSelectedUserId(amitpUser.id);
       } else {
-        setSelectedUserId(humanUsers[0].id);
+        setSelectedUserId(allUsers[0].id);
       }
     }
-  }, [humanUsers, selectedUserId]);
+  }, [allUsers, selectedUserId]);
 
   // Initialize charts
   useEffect(() => {
@@ -148,9 +155,9 @@ export default function UserAnalyticsSection() {
                 <SelectValue placeholder="Select user" />
               </SelectTrigger>
               <SelectContent>
-                {humanUsers.map((user) => (
+                {allUsers.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
-                    {user.userName}
+                    {user.userName} {user.isNHI ? "(NHI)" : "(Human)"}
                   </SelectItem>
                 ))}
               </SelectContent>

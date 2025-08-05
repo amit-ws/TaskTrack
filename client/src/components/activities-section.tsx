@@ -46,7 +46,7 @@ export default function ActivitiesSection() {
             <Activity className="mr-2" style={{ color: "var(--purple-400)" }} size={20} />
             User Activities Tracking
           </h3>
-          <p className="text-sm mt-1" style={{ color: "var(--slate-400)" }}>Session-based and day-wise activity monitoring</p>
+          <p className="text-sm mt-1" style={{ color: "var(--slate-400)" }}>Session-based and day-wise activity monitoring (Human users & NHI)</p>
         </div>
         
         <div className="p-6">
@@ -84,6 +84,7 @@ export default function ActivitiesSection() {
                   <thead>
                     <tr style={{ color: "var(--slate-400)", borderBottom: "1px solid var(--slate-700)" }}>
                       <th className="text-left py-3">User</th>
+                      <th className="text-left py-3">Type</th>
                       <th className="text-left py-3">Login Time</th>
                       <th className="text-left py-3">IP Address</th>
                       <th className="text-left py-3">Roles</th>
@@ -114,11 +115,20 @@ export default function ActivitiesSection() {
                             )}
                           </td>
                           <td className="py-3">
+                            <Badge className={`text-xs ${
+                              userDetails?.isNHI 
+                                ? "bg-purple-500/20 text-purple-400" 
+                                : "bg-blue-500/20 text-blue-400"
+                            }`}>
+                              {userDetails?.isNHI ? "NHI" : "Human"}
+                            </Badge>
+                          </td>
+                          <td className="py-3">
                             {new Date(activity.loginTime).toLocaleString()}
                           </td>
                           <td className="py-3">{activity.ipAddress}</td>
                           <td className="py-3">
-                            <Badge className="text-xs bg-blue-500/20 text-blue-400">
+                            <Badge className="text-xs bg-green-500/20 text-green-400">
                               {activity.roles}
                             </Badge>
                           </td>
@@ -151,6 +161,10 @@ export default function ActivitiesSection() {
                         <span className="text-xs" style={{ color: "var(--slate-400)" }}>Peak Day</span>
                         <span className="text-sm font-semibold" style={{ color: "var(--blue-400)" }}>Jan 14</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs" style={{ color: "var(--slate-400)" }}>Human vs NHI</span>
+                        <span className="text-sm font-semibold" style={{ color: "var(--green-400)" }}>70% / 30%</span>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -166,6 +180,10 @@ export default function ActivitiesSection() {
                         <span className="text-xs" style={{ color: "var(--slate-400)" }}>Growth</span>
                         <span className="text-sm font-semibold" style={{ color: "var(--green-400)" }}>+12%</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs" style={{ color: "var(--slate-400)" }}>NHI Activity</span>
+                        <span className="text-sm font-semibold" style={{ color: "var(--purple-400)" }}>+18%</span>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -180,6 +198,10 @@ export default function ActivitiesSection() {
                       <div className="flex justify-between">
                         <span className="text-xs" style={{ color: "var(--slate-400)" }}>Efficiency</span>
                         <span className="text-sm font-semibold" style={{ color: "var(--green-400)" }}>92%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs" style={{ color: "var(--slate-400)" }}>Automation</span>
+                        <span className="text-sm font-semibold" style={{ color: "var(--cyan-400)" }}>67%</span>
                       </div>
                     </div>
                   </CardContent>
