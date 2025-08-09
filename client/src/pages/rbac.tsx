@@ -1,7 +1,24 @@
 import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import clsx from "clsx";
 
 const orphanedRoles = [
   { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
@@ -67,54 +84,52 @@ export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
 
   return (
-    <Card className="bg-slate-900 border border-slate-700 rounded-lg shadow-lg">
-      <CardHeader className="border-b border-slate-700 px-6 py-4">
-        <CardTitle className="text-white text-xl font-semibold">RBAC Management</CardTitle>
+    <Card className="backdrop-blur-md bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700 rounded-xl shadow-2xl p-6">
+      <CardHeader className="border-b border-slate-700 mb-4">
+        <CardTitle className="text-2xl font-bold text-white tracking-wide">
+          🛡️ Role-Based Access Control
+        </CardTitle>
       </CardHeader>
-      <CardContent className="px-6 py-5">
+      <CardContent>
         <Tabs defaultValue="orphaned-roles" className="w-full">
-          <TabsList className="mb-6 border-b border-slate-700">
+          <TabsList className="flex gap-2 mb-6 bg-slate-800/40 border border-slate-700 rounded-lg p-1">
             <TabsTrigger
               value="orphaned-roles"
-              className="text-sm font-semibold text-slate-300 hover:text-white px-4 py-2 rounded-t-lg"
+              className="text-white text-sm px-4 py-2 rounded-md transition-all duration-200 hover:bg-blue-700/30 data-[state=active]:bg-blue-600/60 data-[state=active]:text-white font-medium"
             >
-              Orphaned / Unused Roles
+              🧩 Orphaned Roles
             </TabsTrigger>
             <TabsTrigger
               value="high-risk-roles"
-              className="text-sm font-semibold text-slate-300 hover:text-white px-4 py-2 rounded-t-lg"
+              className="text-white text-sm px-4 py-2 rounded-md transition-all duration-200 hover:bg-red-700/30 data-[state=active]:bg-red-600/60 data-[state=active]:text-white font-medium"
             >
-              High Risk Roles
+              🔥 High-Risk Roles
             </TabsTrigger>
           </TabsList>
 
-          {/* Orphaned Roles Tab */}
-          <TabsContent value="orphaned-roles" className="pt-1">
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-slate-700 rounded-lg overflow-hidden">
-                <thead className="bg-slate-800">
+          {/* Orphaned Roles */}
+          <TabsContent value="orphaned-roles" className="animate-fade-in space-y-4">
+            <div className="overflow-auto rounded-lg border border-slate-700 shadow-inner">
+              <table className="min-w-full bg-slate-900/60 text-slate-200">
+                <thead className="text-xs uppercase bg-slate-800/70 text-slate-400 border-b border-slate-700">
                   <tr>
-                    {["Role Name", "Role Type", "Creation Date"].map((header) => (
-                      <th
-                        key={header}
-                        className="text-left px-6 py-3 text-slate-300 text-sm font-semibold tracking-wide select-none"
-                      >
-                        {header}
-                      </th>
-                    ))}
+                    <th className="px-6 py-3 text-left">Role Name</th>
+                    <th className="px-6 py-3 text-left">Role Type</th>
+                    <th className="px-6 py-3 text-left">Created At</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orphanedRoles.map((role, idx) => (
                     <tr
                       key={role.roleName}
-                      className={`cursor-pointer transition-colors ${
-                        idx % 2 === 0 ? "bg-slate-900" : "bg-slate-800"
-                      } hover:bg-blue-900`}
+                      className={clsx(
+                        idx % 2 === 0 ? "bg-slate-800/50" : "bg-slate-800/30",
+                        "hover:bg-blue-900/50 transition-colors cursor-pointer"
+                      )}
                     >
-                      <td className="px-6 py-3 text-white whitespace-nowrap">{role.roleName}</td>
-                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{role.roleType}</td>
-                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{role.creationDate}</td>
+                      <td className="px-6 py-4 font-semibold">{role.roleName}</td>
+                      <td className="px-6 py-4">{role.roleType}</td>
+                      <td className="px-6 py-4">{role.creationDate}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -122,22 +137,14 @@ export default function RBAC() {
             </div>
           </TabsContent>
 
-          {/* High Risk Roles Tab */}
-          <TabsContent value="high-risk-roles" className="pt-1 space-y-6">
-            <div className="max-w-xs">
-              <label className="block mb-2 text-sm font-semibold text-slate-300 select-none" htmlFor="role-select">
-                Select Role
-              </label>
-              <Select
-                id="role-select"
-                value={selectedRole}
-                onValueChange={setSelectedRole}
-                className="bg-slate-800 text-white rounded-md border border-slate-700 w-full"
-              >
-                <SelectTrigger className="px-3 py-2">
-                  <SelectValue placeholder="Select a role" />
+          {/* High-Risk Roles */}
+          <TabsContent value="high-risk-roles" className="animate-fade-in space-y-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <Select value={selectedRole} onValueChange={setSelectedRole}>
+                <SelectTrigger className="bg-slate-800 text-white border border-slate-600 rounded-md w-52 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 text-white border border-slate-700 rounded-md max-h-60 overflow-auto">
+                <SelectContent className="bg-slate-900 text-white border border-slate-700 rounded-md">
                   {highRiskRoleNames.map((roleName) => (
                     <SelectItem key={roleName} value={roleName}>
                       {roleName}
@@ -145,48 +152,40 @@ export default function RBAC() {
                   ))}
                 </SelectContent>
               </Select>
+
+              <div className="text-sm text-slate-300">
+                Viewing privileges for:{" "}
+                <span className="font-bold text-blue-400">{selectedRole}</span>
+              </div>
             </div>
 
-            <div className="text-white font-semibold text-lg">
-              Showing results for <span className="text-blue-400">{selectedRole}</span>
-            </div>
-
-            <div className="overflow-x-auto rounded-lg border border-slate-700 shadow-sm">
-              <table className="min-w-full table-auto border-collapse border border-slate-700">
-                <thead className="bg-slate-800">
+            <div className="overflow-auto rounded-lg border border-slate-700 shadow-inner">
+              <table className="min-w-full bg-slate-900/60 text-slate-200">
+                <thead className="text-xs uppercase bg-slate-800/70 text-slate-400 border-b border-slate-700">
                   <tr>
-                    {["Privilege", "Granted On", "Object Name", "Grant Option", "Created On"].map((header) => (
-                      <th
-                        key={header}
-                        className="text-left px-6 py-3 text-slate-300 text-sm font-semibold tracking-wide select-none"
-                      >
-                        {header}
-                      </th>
-                    ))}
+                    <th className="px-6 py-3 text-left">Privilege</th>
+                    <th className="px-6 py-3 text-left">Granted On</th>
+                    <th className="px-6 py-3 text-left">Object</th>
+                    <th className="px-6 py-3 text-left">Grant Option</th>
+                    <th className="px-6 py-3 text-left">Created On</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(highRiskData[selectedRole] || []).map((item, idx) => (
                     <tr
                       key={idx}
-                      className={`cursor-pointer transition-colors ${
-                        idx % 2 === 0 ? "bg-slate-900" : "bg-slate-800"
-                      } hover:bg-blue-900`}
+                      className={clsx(
+                        idx % 2 === 0 ? "bg-slate-800/50" : "bg-slate-800/30",
+                        "hover:bg-red-900/50 transition-colors cursor-pointer"
+                      )}
                     >
-                      <td className="px-6 py-3 text-white whitespace-nowrap">{item.privilege}</td>
-                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.grantedOn}</td>
-                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.objectName}</td>
-                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.grantOption}</td>
-                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.createdOn}</td>
+                      <td className="px-6 py-4 font-semibold">{item.privilege}</td>
+                      <td className="px-6 py-4">{item.grantedOn}</td>
+                      <td className="px-6 py-4">{item.objectName}</td>
+                      <td className="px-6 py-4">{item.grantOption}</td>
+                      <td className="px-6 py-4">{item.createdOn}</td>
                     </tr>
                   ))}
-                  {(!highRiskData[selectedRole] || highRiskData[selectedRole].length === 0) && (
-                    <tr>
-                      <td colSpan={5} className="text-center py-6 text-slate-400 italic">
-                        No data available for this role.
-                      </td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             </div>
