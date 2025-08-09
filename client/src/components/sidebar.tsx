@@ -6,11 +6,11 @@ interface SidebarProps {
   onSectionChange: (section: string) => void;
 }
 
-export default function Sidebar({ onSectionChange }: SidebarProps) {
+export default function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
   const [location, setLocation] = useLocation();
 
   const navigation = [
-    { id: "overview", name: "Overview", icon: Snowflake, href: "/" },
+    { id: "overview", name: "Overview", icon: Snowflake, href: "/overview" },
     { id: "user-analytics", name: "User Analytics", icon: Users, href: "/user-analytics" },
     { id: "activities", name: "Activities Tracking", icon: Activity, href: "/activities" },
     { id: "expensive-queries", name: "Expensive Queries", icon: DollarSign, href: "/expensive-queries" },
@@ -27,6 +27,7 @@ export default function Sidebar({ onSectionChange }: SidebarProps) {
         borderRight: "1px solid var(--slate-800)",
       }}
     >
+      {/* Sidebar Header */}
       <div className="p-6" style={{ borderBottom: "1px solid var(--slate-800)" }}>
         <div className="flex items-center space-x-3">
           <div
@@ -44,17 +45,18 @@ export default function Sidebar({ onSectionChange }: SidebarProps) {
         </div>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         {navigation.map((item) => {
           const Icon = item.icon;
-          const isActive = location === item.href;
+          const isActive = activeSection === item.id; // use state, not URL string
 
           return (
             <button
               key={item.id}
               onClick={() => {
                 onSectionChange(item.id);
-                setLocation(item.href); // Navigate to the route
+                setLocation(item.href);
               }}
               className={`sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left text-sm font-medium ${
                 isActive
@@ -70,6 +72,7 @@ export default function Sidebar({ onSectionChange }: SidebarProps) {
         })}
       </nav>
 
+      {/* Footer */}
       <div className="p-4" style={{ borderTop: "1px solid var(--slate-800)" }}>
         <div className="flex items-center space-x-3">
           <div

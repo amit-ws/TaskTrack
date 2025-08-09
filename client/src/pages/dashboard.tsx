@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import Sidebar from "@/components/sidebar";
 import Header from "@/components/header";
 import OverviewSection from "@/components/overview-section";
@@ -7,9 +8,23 @@ import ActivitiesSection from "@/components/activities-section";
 import ExpensiveQueriesSection from "@/components/expensive-queries-section";
 import ObjectUsageSection from "@/components/object-usage-section";
 import LineageSection from "@/components/lineage-section";
+import WarehouseEfficiency from "@/pages/warehouse-efficiency";
 
 export default function Dashboard() {
+  const [location, setLocation] = useLocation();
   const [activeSection, setActiveSection] = useState("overview");
+
+  // Set section based on URL
+  useEffect(() => {
+    const sectionFromPath = location.replace("/", "") || "overview";
+    setActiveSection(sectionFromPath);
+  }, [location]);
+
+  // Handle section change
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section);
+    setLocation(`/${section}`);
+  };
 
   const renderActiveSection = () => {
     switch (activeSection) {
@@ -25,6 +40,8 @@ export default function Dashboard() {
         return <ObjectUsageSection />;
       case "lineage":
         return <LineageSection />;
+      case "warehouse-efficiency":
+        return <WarehouseEfficiency />;
       default:
         return <OverviewSection />;
     }
@@ -32,7 +49,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "var(--slate-950)" }}>
-      <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+      <Sidebar activeSection={activeSection} onSectionChange={handleSectionChange} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-auto p-6">
