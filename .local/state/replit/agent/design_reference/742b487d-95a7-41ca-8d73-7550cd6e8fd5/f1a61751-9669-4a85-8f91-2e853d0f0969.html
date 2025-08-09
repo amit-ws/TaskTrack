@@ -1,0 +1,1457 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowflake Analytics & Observability Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+        .table-row:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <!-- @COMPONENT: MainLayout -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- @COMPONENT: Sidebar -->
+        <div class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-snowflake text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-white">Snowflake Analytics</h1>
+                        <p class="text-xs text-slate-400">Observability Platform</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#overview" class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg text-blue-400 bg-blue-500/10">
+                    <i class="fas fa-dashboard w-5"></i>
+                    <span class="text-sm font-medium">Overview</span>
+                </a>
+                <a href="#user-analytics" class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white">
+                    <i class="fas fa-user-analytics w-5"></i>
+                    <span class="text-sm font-medium">User Analytics</span>
+                </a>
+                <a href="#activities" class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white">
+                    <i class="fas fa-activity w-5"></i>
+                    <span class="text-sm font-medium">Activities Tracking</span>
+                </a>
+                <a href="#expensive-queries" class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white">
+                    <i class="fas fa-dollar-sign w-5"></i>
+                    <span class="text-sm font-medium">Expensive Queries</span>
+                </a>
+                <a href="#object-usage" class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white">
+                    <i class="fas fa-database w-5"></i>
+                    <span class="text-sm font-medium">Object Usage</span>
+                </a>
+                <a href="#lineage" class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-lg text-slate-300 hover:text-white">
+                    <i class="fas fa-project-diagram w-5"></i>
+                    <span class="text-sm font-medium">Lineage Tracking</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-slate-400 text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white" data-bind="user.name">Admin User</p>
+                        <p class="text-xs text-slate-400">Analytics Admin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: MainContent -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- @COMPONENT: Header -->
+            <header class="bg-slate-900 border-b border-slate-800 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Snowflake Observability Dashboard</h2>
+                        <p class="text-sm text-slate-400">Monitor users, queries, and resource consumption</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 bg-slate-800 px-3 py-2 rounded-lg">
+                            <i class="fas fa-calendar text-slate-400"></i>
+                            <select class="bg-transparent text-sm text-slate-300 border-none outline-none">
+                                <option>Last 7 days</option>
+                                <option>Last 15 days</option>
+                                <option>Last 30 days</option>
+                            </select>
+                        </div>
+                        <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors">
+                            <i class="fas fa-download mr-2"></i>Export Report
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: Header -->
+
+            <!-- @COMPONENT: ContentArea -->
+            <main class="flex-1 overflow-auto p-6">
+                <!-- @COMPONENT: OverviewSection -->
+                <section id="overview" class="space-y-6">
+                    <!-- Summary Metrics -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="metric-card rounded-xl p-6 border border-slate-700">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-400">Total Users</p>
+                                    <p class="text-2xl font-bold text-white mt-1">7</p>
+                                    <p class="text-sm text-green-400 mt-1">
+                                        <i class="fas fa-arrow-up mr-1"></i>4 Active
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-users text-blue-400 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card rounded-xl p-6 border border-slate-700">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-400">Credits Used</p>
+                                    <p class="text-2xl font-bold text-white mt-1">2,847</p>
+                                    <p class="text-sm text-red-400 mt-1">
+                                        <i class="fas fa-arrow-up mr-1"></i>+12% vs last week
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-coins text-amber-400 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card rounded-xl p-6 border border-slate-700">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-400">Queries Executed</p>
+                                    <p class="text-2xl font-bold text-white mt-1">15,432</p>
+                                    <p class="text-sm text-green-400 mt-1">
+                                        <i class="fas fa-arrow-up mr-1"></i>+8% efficiency
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-search text-green-400 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card rounded-xl p-6 border border-slate-700">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-400">Data Scanned</p>
+                                    <p class="text-2xl font-bold text-white mt-1">847 GB</p>
+                                    <p class="text-sm text-slate-400 mt-1">
+                                        Avg 121 GB/day
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-database text-purple-400 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Identity Overview -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Human Users -->
+                        <div class="bg-slate-900 rounded-xl border border-slate-700">
+                            <div class="p-6 border-b border-slate-700">
+                                <h3 class="text-lg font-semibold text-white flex items-center">
+                                    <i class="fas fa-users mr-2 text-blue-400"></i>
+                                    Human Users
+                                </h3>
+                                <p class="text-sm text-slate-400 mt-1">Active user accounts and authentication status</p>
+                            </div>
+                            <div class="p-6">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-2">User Name</th>
+                                                <th class="text-left py-2">Owner</th>
+                                                <th class="text-left py-2">Last Login</th>
+                                                <th class="text-left py-2">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold">A</div>
+                                                        <span data-bind="user.name">AMITP</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">ADMIN</td>
+                                                <td class="py-3">2024-01-15 09:32</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
+                                                        Active
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold">A</div>
+                                                        <span>API_USER</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">SYSTEM</td>
+                                                <td class="py-3">2024-01-15 11:45</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
+                                                        Active
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs font-bold">D</div>
+                                                        <span>DEV_USER</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">DEV_ADMIN</td>
+                                                <td class="py-3">2024-01-14 16:22</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-500/20 text-amber-400">
+                                                        <div class="w-1.5 h-1.5 bg-amber-400 rounded-full mr-1.5"></div>
+                                                        Idle
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-xs font-bold">V</div>
+                                                        <span>VMAMIDI</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">ADMIN</td>
+                                                <td class="py-3">2024-01-15 08:15</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
+                                                        Active
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NHI (Non-Human Identities) -->
+                        <div class="bg-slate-900 rounded-xl border border-slate-700">
+                            <div class="p-6 border-b border-slate-700">
+                                <h3 class="text-lg font-semibold text-white flex items-center">
+                                    <i class="fas fa-robot mr-2 text-purple-400"></i>
+                                    NHI (Non-Human Identities)
+                                </h3>
+                                <p class="text-sm text-slate-400 mt-1">Service accounts and automated integrations</p>
+                            </div>
+                            <div class="p-6">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-2">Identity Name</th>
+                                                <th class="text-left py-2">Owner</th>
+                                                <th class="text-left py-2">Token Type</th>
+                                                <th class="text-left py-2">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center">
+                                                            <i class="fas fa-cog text-xs"></i>
+                                                        </div>
+                                                        <span>SB_INTEGRATION</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">AMITP</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        OAUTH_ACCESS_TOKEN
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
+                                                        Active
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                                                            <i class="fas fa-flask text-xs"></i>
+                                                        </div>
+                                                        <span>DEV_TESTING</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">DEV_USER</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400">
+                                                        PROGRAMMATIC_ACCESS_TOKEN
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
+                                                        Active
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
+                                                            <i class="fas fa-plug text-xs"></i>
+                                                        </div>
+                                                        <span>APP_INTEGRATION</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">VMAMIDI</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        OAUTH_ACCESS_TOKEN
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
+                                                        Active
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Analytics Detail Section -->
+                    <div class="bg-slate-900 rounded-xl border border-slate-700">
+                        <div class="p-6 border-b border-slate-700">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-white flex items-center">
+                                    <i class="fas fa-chart-line mr-2 text-green-400"></i>
+                                    User Analytics Deep Dive
+                                </h3>
+                                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300">
+                                    <option>AMITP</option>
+                                    <option>API_USER</option>
+                                    <option>DEV_USER</option>
+                                    <option>VMAMIDI</option>
+                                </select>
+                            </div>
+                            <p class="text-sm text-slate-400 mt-1">Detailed analytics for selected user (Currently showing: AMITP)</p>
+                        </div>
+                        
+                        <div class="p-6 space-y-6">
+                            <!-- Analytics Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <!-- Query Metrics -->
+                                <div class="bg-slate-800 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-3">Query Metrics</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Total Queries</span>
+                                            <span class="text-sm font-semibold text-white">3,247</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Avg Duration</span>
+                                            <span class="text-sm font-semibold text-white">2.4s</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Most Used</span>
+                                            <span class="text-sm font-semibold text-blue-400">SELECT</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Data Access Patterns -->
+                                <div class="bg-slate-800 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-3">Data Access</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Databases</span>
+                                            <span class="text-sm font-semibold text-white">7</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Frequent Tables</span>
+                                            <span class="text-sm font-semibold text-white">USERS</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Schema Access</span>
+                                            <span class="text-sm font-semibold text-blue-400">PUBLIC</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Resource Consumption -->
+                                <div class="bg-slate-800 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-3">Resource Usage</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Credits Used</span>
+                                            <span class="text-sm font-semibold text-white">847</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Warehouse</span>
+                                            <span class="text-sm font-semibold text-white">COMPUTE_WH</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Data Scanned</span>
+                                            <span class="text-sm font-semibold text-blue-400">234 GB</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Security & Roles -->
+                                <div class="bg-slate-800 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-3">Security & Roles</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Auth Method</span>
+                                            <span class="text-sm font-semibold text-white">SSO</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Unique Roles</span>
+                                            <span class="text-sm font-semibold text-white">4</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-xs text-slate-400">Privileges</span>
+                                            <span class="text-sm font-semibold text-blue-400">15</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Query Types Chart -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="bg-slate-800 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-4">Query Type Distribution</h4>
+                                    <div class="chart-container">
+                                        <canvas id="queryTypeChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-800 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-4">Credit Usage Trend</h4>
+                                    <div class="chart-container">
+                                        <canvas id="creditUsageChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activities Tracking Section -->
+                    <div class="bg-slate-900 rounded-xl border border-slate-700">
+                        <div class="p-6 border-b border-slate-700">
+                            <h3 class="text-lg font-semibold text-white flex items-center">
+                                <i class="fas fa-activity mr-2 text-purple-400"></i>
+                                User Activities Tracking
+                            </h3>
+                            <p class="text-sm text-slate-400 mt-1">Session-based and day-wise activity monitoring</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <!-- Tabs -->
+                            <div class="flex space-x-1 mb-6 bg-slate-800 p-1 rounded-lg">
+                                <button class="tab-btn active px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white" data-tab="sessions">
+                                    Session Based
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white" data-tab="daily">
+                                    Day Wise
+                                </button>
+                            </div>
+
+                            <!-- Session Based Content -->
+                            <div id="sessions-tab" class="tab-content">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-3">User</th>
+                                                <th class="text-left py-3">Login Time</th>
+                                                <th class="text-left py-3">IP Address</th>
+                                                <th class="text-left py-3">Roles</th>
+                                                <th class="text-left py-3">Objects Accessed</th>
+                                                <th class="text-left py-3">Credits</th>
+                                                <th class="text-left py-3">Queries</th>
+                                                <th class="text-left py-3">Data Scanned</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold">A</div>
+                                                        <span>AMITP</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">2024-01-15 09:32:15</td>
+                                                <td class="py-3">192.168.1.105</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        ADMIN, ANALYST
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">USERS, ORDERS, INVENTORY</td>
+                                                <td class="py-3">247.5</td>
+                                                <td class="py-3">1,832</td>
+                                                <td class="py-3">45.2 GB</td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold">A</div>
+                                                        <span>API_USER</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">2024-01-15 11:45:22</td>
+                                                <td class="py-3">10.0.0.24</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400">
+                                                        API_ROLE
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">LOGS, METRICS</td>
+                                                <td class="py-3">156.8</td>
+                                                <td class="py-3">956</td>
+                                                <td class="py-3">28.7 GB</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Day Wise Content -->
+                            <div id="daily-tab" class="tab-content hidden">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                                    <div class="bg-slate-800 rounded-lg p-4">
+                                        <h4 class="text-sm font-medium text-slate-300 mb-3">7 Days Activity</h4>
+                                        <div class="space-y-2">
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-slate-400">Avg Daily Queries</span>
+                                                <span class="text-sm font-semibold text-white">2,204</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-slate-400">Peak Day</span>
+                                                <span class="text-sm font-semibold text-blue-400">Jan 14</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-slate-800 rounded-lg p-4">
+                                        <h4 class="text-sm font-medium text-slate-300 mb-3">15 Days Trend</h4>
+                                        <div class="space-y-2">
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-slate-400">Credits/Day</span>
+                                                <span class="text-sm font-semibold text-white">406.7</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-slate-400">Growth</span>
+                                                <span class="text-sm font-semibold text-green-400">+12%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-slate-800 rounded-lg p-4">
+                                        <h4 class="text-sm font-medium text-slate-300 mb-3">30 Days Overview</h4>
+                                        <div class="space-y-2">
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-slate-400">Data Processed</span>
+                                                <span class="text-sm font-semibold text-white">2.4 TB</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-slate-400">Efficiency</span>
+                                                <span class="text-sm font-semibold text-green-400">92%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Most Expensive Queries Section -->
+                    <div class="bg-slate-900 rounded-xl border border-slate-700">
+                        <div class="p-6 border-b border-slate-700">
+                            <h3 class="text-lg font-semibold text-white flex items-center">
+                                <i class="fas fa-dollar-sign mr-2 text-red-400"></i>
+                                Most Expensive Queries (Last 7 Days)
+                            </h3>
+                            <p class="text-sm text-slate-400 mt-1">Top 50 resource-intensive queries for cost optimization</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <!-- Grouping Tabs -->
+                            <div class="flex space-x-1 mb-6 bg-slate-800 p-1 rounded-lg">
+                                <button class="expense-tab-btn active px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white" data-tab="query-hash">
+                                    By Query Hash
+                                </button>
+                                <button class="expense-tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white" data-tab="user-role">
+                                    By User + Role
+                                </button>
+                                <button class="expense-tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white" data-tab="user-query">
+                                    User + Role + Query
+                                </button>
+                            </div>
+
+                            <!-- Query Hash Grouping -->
+                            <div id="query-hash-tab" class="expense-tab-content">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-3">Sample Query</th>
+                                                <th class="text-left py-3">Users</th>
+                                                <th class="text-left py-3">Roles</th>
+                                                <th class="text-left py-3">Warehouses</th>
+                                                <th class="text-left py-3">Executions</th>
+                                                <th class="text-left py-3">Credits</th>
+                                                <th class="text-left py-3">Data Scanned</th>
+                                                <th class="text-left py-3">Runtime</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3 max-w-xs">
+                                                    <div class="truncate">
+                                                        <code class="text-xs bg-slate-800 px-2 py-1 rounded">SELECT * FROM large_table WHERE complex_join...</code>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">AMITP, API_USER</td>
+                                                <td class="py-3">ADMIN, ANALYST</td>
+                                                <td class="py-3">COMPUTE_WH_L</td>
+                                                <td class="py-3">847</td>
+                                                <td class="py-3">
+                                                    <span class="text-red-400 font-semibold">2,456.8</span>
+                                                </td>
+                                                <td class="py-3">156.7 GB</td>
+                                                <td class="py-3">324.2s</td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3 max-w-xs">
+                                                    <div class="truncate">
+                                                        <code class="text-xs bg-slate-800 px-2 py-1 rounded">CREATE TABLE temp_analytics AS SELECT...</code>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">DEV_USER</td>
+                                                <td class="py-3">DEVELOPER</td>
+                                                <td class="py-3">DEV_WH</td>
+                                                <td class="py-3">234</td>
+                                                <td class="py-3">
+                                                    <span class="text-red-400 font-semibold">1,892.5</span>
+                                                </td>
+                                                <td class="py-3">98.3 GB</td>
+                                                <td class="py-3">245.8s</td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3 max-w-xs">
+                                                    <div class="truncate">
+                                                        <code class="text-xs bg-slate-800 px-2 py-1 rounded">INSERT INTO fact_table SELECT from staging...</code>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">VMAMIDI</td>
+                                                <td class="py-3">ETL_ROLE</td>
+                                                <td class="py-3">ETL_WH</td>
+                                                <td class="py-3">156</td>
+                                                <td class="py-3">
+                                                    <span class="text-red-400 font-semibold">1,567.2</span>
+                                                </td>
+                                                <td class="py-3">89.4 GB</td>
+                                                <td class="py-3">198.5s</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- User + Role Grouping -->
+                            <div id="user-role-tab" class="expense-tab-content hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-3">User</th>
+                                                <th class="text-left py-3">Role Used</th>
+                                                <th class="text-left py-3">Total Executions</th>
+                                                <th class="text-left py-3">Total Credits</th>
+                                                <th class="text-left py-3">Total Data Scanned</th>
+                                                <th class="text-left py-3">Total Runtime</th>
+                                                <th class="text-left py-3">First Seen</th>
+                                                <th class="text-left py-3">Last Seen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">AMITP</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        ADMIN
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">3,247</td>
+                                                <td class="py-3">
+                                                    <span class="text-red-400 font-semibold">4,892.7</span>
+                                                </td>
+                                                <td class="py-3">234.8 GB</td>
+                                                <td class="py-3">1,245.8s</td>
+                                                <td class="py-3">2024-01-08</td>
+                                                <td class="py-3">2024-01-15</td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">DEV_USER</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        DEVELOPER
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">1,834</td>
+                                                <td class="py-3">
+                                                    <span class="text-red-400 font-semibold">2,456.3</span>
+                                                </td>
+                                                <td class="py-3">156.2 GB</td>
+                                                <td class="py-3">892.4s</td>
+                                                <td class="py-3">2024-01-09</td>
+                                                <td class="py-3">2024-01-14</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- User + Role + Query Grouping -->
+                            <div id="user-query-tab" class="expense-tab-content hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-3">User</th>
+                                                <th class="text-left py-3">Role</th>
+                                                <th class="text-left py-3">Sample Query</th>
+                                                <th class="text-left py-3">Executions</th>
+                                                <th class="text-left py-3">Credits</th>
+                                                <th class="text-left py-3">Data Scanned</th>
+                                                <th class="text-left py-3">Runtime</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">AMITP</td>
+                                                <td class="py-3">ADMIN</td>
+                                                <td class="py-3 max-w-xs">
+                                                    <div class="truncate">
+                                                        <code class="text-xs bg-slate-800 px-2 py-1 rounded">SELECT COUNT(*) FROM users WHERE...</code>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">1,234</td>
+                                                <td class="py-3">
+                                                    <span class="text-red-400 font-semibold">1,892.4</span>
+                                                </td>
+                                                <td class="py-3">67.8 GB</td>
+                                                <td class="py-3">456.2s</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Object Usage Section -->
+                    <div class="bg-slate-900 rounded-xl border border-slate-700">
+                        <div class="p-6 border-b border-slate-700">
+                            <h3 class="text-lg font-semibold text-white flex items-center">
+                                <i class="fas fa-database mr-2 text-cyan-400"></i>
+                                Object Usage Analysis (READ/MODIFY)
+                            </h3>
+                            <p class="text-sm text-slate-400 mt-1">Top accessed objects with credit consumption and user patterns</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <!-- Usage Type Tabs -->
+                            <div class="flex space-x-1 mb-6 bg-slate-800 p-1 rounded-lg">
+                                <button class="usage-tab-btn active px-4 py-2 text-sm font-medium rounded-md bg-cyan-600 text-white" data-tab="read-usage">
+                                    READ Operations
+                                </button>
+                                <button class="usage-tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white" data-tab="modify-usage">
+                                    MODIFY Operations
+                                </button>
+                            </div>
+
+                            <!-- READ Usage -->
+                            <div id="read-usage-tab" class="usage-tab-content">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-3">Object Name</th>
+                                                <th class="text-left py-3">Object Type</th>
+                                                <th class="text-left py-3">Credits Consumed</th>
+                                                <th class="text-left py-3">Unique Users</th>
+                                                <th class="text-left py-3">Access Count</th>
+                                                <th class="text-left py-3">Last Accessed</th>
+                                                <th class="text-left py-3">Data Scanned</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <i class="fas fa-table text-blue-400"></i>
+                                                        <span>USERS_FACT_TABLE</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        Table
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="text-amber-400 font-semibold">1,456.8</span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="flex -space-x-1">
+                                                        <div class="w-6 h-6 bg-blue-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">A</div>
+                                                        <div class="w-6 h-6 bg-purple-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">V</div>
+                                                        <div class="w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">D</div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">2,847</td>
+                                                <td class="py-3">2024-01-15 14:32</td>
+                                                <td class="py-3">89.4 GB</td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <i class="fas fa-eye text-green-400"></i>
+                                                        <span>ORDERS_ANALYTICS_VIEW</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        View
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="text-amber-400 font-semibold">987.3</span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="flex -space-x-1">
+                                                        <div class="w-6 h-6 bg-blue-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">A</div>
+                                                        <div class="w-6 h-6 bg-orange-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">V</div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">1,543</td>
+                                                <td class="py-3">2024-01-15 13:45</td>
+                                                <td class="py-3">67.2 GB</td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <i class="fas fa-cogs text-purple-400"></i>
+                                                        <span>CALCULATE_METRICS</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400">
+                                                        Procedure
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="text-amber-400 font-semibold">734.9</span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="flex -space-x-1">
+                                                        <div class="w-6 h-6 bg-purple-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">A</div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">892</td>
+                                                <td class="py-3">2024-01-15 12:18</td>
+                                                <td class="py-3">45.8 GB</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- MODIFY Usage -->
+                            <div id="modify-usage-tab" class="usage-tab-content hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-3">Object Name</th>
+                                                <th class="text-left py-3">Object Type</th>
+                                                <th class="text-left py-3">Operation Type</th>
+                                                <th class="text-left py-3">Credits Consumed</th>
+                                                <th class="text-left py-3">Unique Users</th>
+                                                <th class="text-left py-3">Modification Count</th>
+                                                <th class="text-left py-3">Last Modified</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <i class="fas fa-table text-blue-400"></i>
+                                                        <span>STAGING_TABLE</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        Table
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-500/20 text-orange-400">
+                                                        INSERT
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="text-amber-400 font-semibold">2,134.7</span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="flex -space-x-1">
+                                                        <div class="w-6 h-6 bg-orange-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">V</div>
+                                                        <div class="w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">D</div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">1,234</td>
+                                                <td class="py-3">2024-01-15 15:22</td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <i class="fas fa-table text-blue-400"></i>
+                                                        <span>USER_PREFERENCES</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        Table
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400">
+                                                        UPDATE
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="text-amber-400 font-semibold">456.2</span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="flex -space-x-1">
+                                                        <div class="w-6 h-6 bg-blue-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">A</div>
+                                                        <div class="w-6 h-6 bg-purple-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-xs font-bold">A</div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">847</td>
+                                                <td class="py-3">2024-01-15 14:18</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lineage Tracking Section -->
+                    <div class="bg-slate-900 rounded-xl border border-slate-700">
+                        <div class="p-6 border-b border-slate-700">
+                            <h3 class="text-lg font-semibold text-white flex items-center">
+                                <i class="fas fa-project-diagram mr-2 text-indigo-400"></i>
+                                Lineage Tracking - Dependency Analysis
+                            </h3>
+                            <p class="text-sm text-slate-400 mt-1">Who depends on me? Complete dependency mapping and impact analysis</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <!-- Object Selection -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Analyze Dependencies For:</label>
+                                <select class="bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-slate-300 w-full md:w-auto">
+                                    <option>USERS_FACT_TABLE</option>
+                                    <option>ORDERS_ANALYTICS_VIEW</option>
+                                    <option>INVENTORY_MASTER</option>
+                                    <option>CUSTOMER_METRICS</option>
+                                </select>
+                            </div>
+
+                            <!-- Dependency Visualization -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                                <!-- Logical Dependencies -->
+                                <div class="bg-slate-800 rounded-lg p-6">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-4 flex items-center">
+                                        <i class="fas fa-sitemap mr-2 text-blue-400"></i>
+                                        Logical Dependencies
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-eye text-green-400"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-white">USER_ANALYTICS_VIEW</p>
+                                                    <p class="text-xs text-slate-400">View depending on this table</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs text-green-400">Active</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-cogs text-purple-400"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-white">GET_USER_METRICS()</p>
+                                                    <p class="text-xs text-slate-400">Function using this table</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs text-green-400">Active</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-play text-blue-400"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-white">DAILY_USER_REPORT_SP</p>
+                                                    <p class="text-xs text-slate-400">Stored procedure dependency</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs text-green-400">Active</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- FK Dependencies -->
+                                <div class="bg-slate-800 rounded-lg p-6">
+                                    <h4 class="text-sm font-medium text-slate-300 mb-4 flex items-center">
+                                        <i class="fas fa-link mr-2 text-yellow-400"></i>
+                                        Foreign Key Dependencies
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-table text-blue-400"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-white">USER_ORDERS</p>
+                                                    <p class="text-xs text-slate-400">FK: fk_user_orders_userid</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs text-blue-400">FK_CONSTRAINT</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-table text-blue-400"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-white">USER_SESSIONS</p>
+                                                    <p class="text-xs text-slate-400">FK: fk_sessions_userid</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs text-blue-400">FK_CONSTRAINT</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-table text-blue-400"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-white">USER_PREFERENCES</p>
+                                                    <p class="text-xs text-slate-400">FK: fk_preferences_userid</p>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs text-blue-400">FK_CONSTRAINT</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- External Dependencies -->
+                            <div class="bg-slate-800 rounded-lg p-6 mb-6">
+                                <h4 class="text-sm font-medium text-slate-300 mb-4 flex items-center">
+                                    <i class="fas fa-external-link-alt mr-2 text-red-400"></i>
+                                    External Dependencies (Outside Snowflake)
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="p-4 bg-slate-700 rounded-lg">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-chart-bar text-blue-400"></i>
+                                            <span class="text-sm font-medium text-white">BI Dashboards</span>
+                                        </div>
+                                        <ul class="text-xs text-slate-400 space-y-1">
+                                            <li>• Tableau User Analytics Dashboard</li>
+                                            <li>• PowerBI User Metrics Report</li>
+                                            <li>• Looker User Insights</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-slate-700 rounded-lg">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-robot text-purple-400"></i>
+                                            <span class="text-sm font-medium text-white">ETL Pipelines</span>
+                                        </div>
+                                        <ul class="text-xs text-slate-400 space-y-1">
+                                            <li>• Airflow DAG: user_data_pipeline</li>
+                                            <li>• dbt model: user_transformations</li>
+                                            <li>• Spark job: user_analytics_batch</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-slate-700 rounded-lg">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-brain text-green-400"></i>
+                                            <span class="text-sm font-medium text-white">ML/AI Jobs</span>
+                                        </div>
+                                        <ul class="text-xs text-slate-400 space-y-1">
+                                            <li>• User Behavior Prediction Model</li>
+                                            <li>• Churn Prediction Pipeline</li>
+                                            <li>• Recommendation Engine</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Access Patterns -->
+                            <div class="bg-slate-800 rounded-lg p-6">
+                                <h4 class="text-sm font-medium text-slate-300 mb-4 flex items-center">
+                                    <i class="fas fa-users mr-2 text-cyan-400"></i>
+                                    Top Users Accessing This Object
+                                </h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="text-slate-400 border-b border-slate-700">
+                                                <th class="text-left py-2">User</th>
+                                                <th class="text-left py-2">Role</th>
+                                                <th class="text-left py-2">Query Type</th>
+                                                <th class="text-left py-2">Access Count</th>
+                                                <th class="text-left py-2">Credits Used</th>
+                                                <th class="text-left py-2">Last Access</th>
+                                                <th class="text-left py-2">Impact Level</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-slate-300">
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold">A</div>
+                                                        <span>AMITP</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">ADMIN</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                                                        SELECT
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">2,847</td>
+                                                <td class="py-3">1,456.8</td>
+                                                <td class="py-3">2024-01-15 14:32</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-500/20 text-red-400">
+                                                        High
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row border-b border-slate-800">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-xs font-bold">V</div>
+                                                        <span>VMAMIDI</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">ANALYST</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        SELECT
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">1,234</td>
+                                                <td class="py-3">678.2</td>
+                                                <td class="py-3">2024-01-15 13:15</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-500/20 text-amber-400">
+                                                        Medium
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td class="py-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold">A</div>
+                                                        <span>API_USER</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">API_ROLE</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400">
+                                                        SELECT
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">892</td>
+                                                <td class="py-3">445.7</td>
+                                                <td class="py-3">2024-01-15 11:45</td>
+                                                <td class="py-3">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                                                        Low
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- @END_COMPONENT: OverviewSection -->
+            </main>
+            <!-- @END_COMPONENT: ContentArea -->
+        </div>
+        <!-- @END_COMPONENT: MainContent -->
+    </div>
+    <!-- @END_COMPONENT: MainLayout -->
+
+    <script>
+        // Tab functionality for different sections
+        (function() {
+            // Activity tracking tabs
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.getAttribute('data-tab');
+                    
+                    // Update button states
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                        btn.classList.add('text-slate-400');
+                    });
+                    button.classList.add('active', 'bg-blue-600', 'text-white');
+                    button.classList.remove('text-slate-400');
+                    
+                    // Update content visibility
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(tabName + '-tab').classList.remove('hidden');
+                });
+            });
+
+            // Expensive queries tabs
+            const expenseTabButtons = document.querySelectorAll('.expense-tab-btn');
+            const expenseTabContents = document.querySelectorAll('.expense-tab-content');
+
+            expenseTabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.getAttribute('data-tab');
+                    
+                    // Update button states
+                    expenseTabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-red-600', 'text-white');
+                        btn.classList.add('text-slate-400');
+                    });
+                    button.classList.add('active', 'bg-red-600', 'text-white');
+                    button.classList.remove('text-slate-400');
+                    
+                    // Update content visibility
+                    expenseTabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(tabName + '-tab').classList.remove('hidden');
+                });
+            });
+
+            // Usage analysis tabs
+            const usageTabButtons = document.querySelectorAll('.usage-tab-btn');
+            const usageTabContents = document.querySelectorAll('.usage-tab-content');
+
+            usageTabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.getAttribute('data-tab');
+                    
+                    // Update button states
+                    usageTabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-cyan-600', 'text-white');
+                        btn.classList.add('text-slate-400');
+                    });
+                    button.classList.add('active', 'bg-cyan-600', 'text-white');
+                    button.classList.remove('text-slate-400');
+                    
+                    // Update content visibility
+                    usageTabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(tabName + '-tab').classList.remove('hidden');
+                });
+            });
+        })();
+
+        // Initialize charts
+        (function() {
+            // Query Type Distribution Chart
+            const queryTypeCtx = document.getElementById('queryTypeChart').getContext('2d');
+            new Chart(queryTypeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'OTHER'],
+                    datasets: [{
+                        data: [65, 15, 10, 3, 4, 3],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444',
+                            '#8b5cf6',
+                            '#6b7280'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#cbd5e1',
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Credit Usage Trend Chart
+            const creditUsageCtx = document.getElementById('creditUsageChart').getContext('2d');
+            new Chart(creditUsageCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan 8', 'Jan 9', 'Jan 10', 'Jan 11', 'Jan 12', 'Jan 13', 'Jan 14', 'Jan 15'],
+                    datasets: [{
+                        label: 'Credits Used',
+                        data: [120, 140, 110, 180, 160, 200, 190, 247],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#cbd5e1'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#cbd5e1'
+                            },
+                            grid: {
+                                color: 'rgba(203, 213, 225, 0.1)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#cbd5e1'
+                            },
+                            grid: {
+                                color: 'rgba(203, 213, 225, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+
+        // Sidebar navigation functionality
+        (function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Update active state
+                    sidebarLinks.forEach(l => {
+                        l.classList.remove('text-blue-400', 'bg-blue-500/10');
+                        l.classList.add('text-slate-300');
+                    });
+                    
+                    link.classList.add('text-blue-400', 'bg-blue-500/10');
+                    link.classList.remove('text-slate-300');
+                    
+                    // TODO: Implement section switching logic for multi-page navigation
+                    console.log('Navigate to:', link.getAttribute('href'));
+                });
+            });
+        })();
+
+        // Export functionality placeholder
+        (function() {
+            const exportBtn = document.querySelector('button:has(.fa-download)');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    // TODO: Implement actual export functionality
+                    alert('Export functionality will be implemented with backend integration');
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
