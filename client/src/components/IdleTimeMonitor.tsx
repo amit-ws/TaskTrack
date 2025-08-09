@@ -72,21 +72,20 @@ export default function IdleTimeMonitor({ timeWindow }: { timeWindow: string }) 
                 </Badge>
               </CardTitle>
             </CardHeader>
-<CardContent className="p-6 space-y-2 text-slate-300">
-  <p>
-    <strong className="text-white mb-1 block">Last Query:</strong> {wh.lastQuery || "—"}
-  </p>
-  <p>
-    <strong className="text-white mb-1 block">Last Resume:</strong> {wh.lastResume || "—"}
-  </p>
-  <p>
-    <strong className="text-white mb-1 block">Last Suspend:</strong> {wh.lastSuspend || "—"}
-  </p>
-  <p>
-    <strong className="text-white mb-1 block">State:</strong> {wh.state}
-  </p>
-</CardContent>
-
+            <CardContent className="space-y-1 text-sm text-slate-300">
+              <p>
+                <strong className="text-white">Last Query:</strong> {wh.lastQuery || "—"}
+              </p>
+              <p>
+                <strong className="text-white">Last Resume:</strong> {wh.lastResume || "—"}
+              </p>
+              <p>
+                <strong className="text-white">Last Suspend:</strong> {wh.lastSuspend || "—"}
+              </p>
+              <p>
+                <strong className="text-white">State:</strong> {wh.state}
+              </p>
+            </CardContent>
           </Card>
         ))}
       </div>
