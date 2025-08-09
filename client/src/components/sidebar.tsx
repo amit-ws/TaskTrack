@@ -1,4 +1,4 @@
-import { Snowflake, Users, Activity, DollarSign, Database, GitBranch, User, CircleGauge } from "lucide-react";
+import { Snowflake, Users, Activity, DollarSign, Database, GitBranch, User, CircleGauge, ShieldCheck } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface SidebarProps {
@@ -17,6 +17,7 @@ export default function Sidebar({ activeSection, onSectionChange }: SidebarProps
     { id: "object-usage", name: "Object Usage", icon: Database, href: "/object-usage" },
     { id: "lineage", name: "Lineage Tracking", icon: GitBranch, href: "/lineage" },
     { id: "warehouse-efficiency", name: "Warehouse Efficiency", icon: CircleGauge, href: "/warehouse-efficiency" },
+    { id: "rbac", name: "RBAC", icon: ShieldCheck, href: "/rbac" }, // <-- Added RBAC menu item
   ];
 
   return (
