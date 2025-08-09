@@ -80,10 +80,10 @@ export default function OverProvisioningAdvisor({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold text-white">Over-Provisioning Advisor</h3>
         <div className="text-sm text-slate-400">Window: last {timeWindow} days</div>
-      </div>
+      </div> */}
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {data.map((row) => (
@@ -111,51 +111,52 @@ export default function OverProvisioningAdvisor({
               </div>
             </CardHeader>
 
-            <CardContent className="pt-3">
-              {/* Running Ratio bar */}
-              <div className="mb-3">
-                <div className="flex justify-between text-xs text-slate-400 mb-1">
-                  <span>Avg running ratio</span>
-                  <span>{pct(row.avgRunningRatio)}</span>
-                </div>
-                <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div
-                    aria-hidden
-                    className="h-2 rounded-full"
-                    style={{
-                      width: `${Math.min(100, Math.round(row.avgRunningRatio * 100))}%`,
-                      background:
-                        row.avgRunningRatio > 0.4
-                          ? "linear-gradient(90deg,#ef4444,#f97316)"
-                          : row.avgRunningRatio > 0.15
-                          ? "linear-gradient(90deg,#f59e0b,#f97316)"
-                          : "linear-gradient(90deg,#10b981,#34d399)",
-                    }}
-                  />
-                </div>
-              </div>
+            <CardContent className="p-6 space-y-4">
+  {/* Running Ratio bar */}
+  <div className="mb-4">
+    <div className="flex justify-between text-xs text-slate-400 mb-2">
+      <span>Avg running ratio</span>
+      <span>{pct(row.avgRunningRatio)}</span>
+    </div>
+    <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+      <div
+        aria-hidden
+        className="h-2 rounded-full"
+        style={{
+          width: `${Math.min(100, Math.round(row.avgRunningRatio * 100))}%`,
+          background:
+            row.avgRunningRatio > 0.4
+              ? "linear-gradient(90deg,#ef4444,#f97316)"
+              : row.avgRunningRatio > 0.15
+              ? "linear-gradient(90deg,#f59e0b,#f97316)"
+              : "linear-gradient(90deg,#10b981,#34d399)",
+        }}
+      />
+    </div>
+  </div>
 
-              {/* Queued load */}
-              <div className="mb-3 text-sm text-slate-300">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-slate-400">Avg queued load</div>
-                  <div className="text-sm font-medium">{row.avgQueuedLoad.toFixed(2)}</div>
-                </div>
-              </div>
+  {/* Queued load */}
+  <div className="mb-4 text-sm text-slate-300">
+    <div className="flex items-center justify-between">
+      <div className="text-xs text-slate-400">Avg queued load</div>
+      <div className="text-sm font-medium">{row.avgQueuedLoad.toFixed(2)}</div>
+    </div>
+  </div>
 
-              {/* Recommendation */}
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5">{recIcon(row.recommendation)}</div>
-                <div className="text-sm">
-                  <div className="font-medium text-white">
-                    {row.recommendation.replace(/^🔽|⚠️|✅\s*/g, "").trim()}
-                  </div>
-                  <div className="text-xs text-slate-400 mt-1">
-                    {row.recommendation.startsWith("🔽") ? "Low utilization detected" : ""}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
+  {/* Recommendation */}
+  <div className="flex items-start gap-4">
+    <div className="mt-0.5">{recIcon(row.recommendation)}</div>
+    <div className="text-sm">
+      <div className="font-medium text-white">
+        {row.recommendation.replace(/^🔽|⚠️|✅\s*/g, "").trim()}
+      </div>
+      <div className="text-xs text-slate-400 mt-1">
+        {row.recommendation.startsWith("🔽") ? "Low utilization detected" : ""}
+      </div>
+    </div>
+  </div>
+</CardContent>
+
           </Card>
         ))}
       </div>
