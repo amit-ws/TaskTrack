@@ -73,27 +73,31 @@ export default function RBAC() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="orphaned-roles" className="w-full">
-          <TabsList>
-            <TabsTrigger value="orphaned-roles">Orphaned / Unused Roles</TabsTrigger>
-            <TabsTrigger value="high-risk-roles">High Risk Roles</TabsTrigger>
+          <TabsList className="mb-4 border-b border-slate-700">
+            <TabsTrigger value="orphaned-roles" className="text-sm font-semibold text-slate-300 hover:text-white">
+              Orphaned / Unused Roles
+            </TabsTrigger>
+            <TabsTrigger value="high-risk-roles" className="text-sm font-semibold text-slate-300 hover:text-white">
+              High Risk Roles
+            </TabsTrigger>
           </TabsList>
 
           {/* Orphaned Roles Tab */}
-          <TabsContent value="orphaned-roles" className="pt-4">
+          <TabsContent value="orphaned-roles" className="pt-2">
             <table className="w-full text-left text-sm border-collapse border border-slate-700">
               <thead>
                 <tr className="bg-slate-800">
-                  <th className="p-2 border border-slate-700">Role Name</th>
-                  <th className="p-2 border border-slate-700">Role Type</th>
-                  <th className="p-2 border border-slate-700">Creation Date</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Role Name</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Role Type</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Creation Date</th>
                 </tr>
               </thead>
               <tbody>
                 {orphanedRoles.map((role) => (
-                  <tr key={role.roleName} className="even:bg-slate-800 odd:bg-slate-900">
-                    <td className="p-2 border border-slate-700">{role.roleName}</td>
-                    <td className="p-2 border border-slate-700">{role.roleType}</td>
-                    <td className="p-2 border border-slate-700">{role.creationDate}</td>
+                  <tr key={role.roleName} className="even:bg-slate-800 odd:bg-slate-900 hover:bg-slate-700 transition-colors cursor-pointer">
+                    <td className="p-3 border border-slate-700">{role.roleName}</td>
+                    <td className="p-3 border border-slate-700">{role.roleType}</td>
+                    <td className="p-3 border border-slate-700">{role.creationDate}</td>
                   </tr>
                 ))}
               </tbody>
@@ -101,16 +105,16 @@ export default function RBAC() {
           </TabsContent>
 
           {/* High Risk Roles Tab */}
-          <TabsContent value="high-risk-roles" className="pt-4 space-y-4">
+          <TabsContent value="high-risk-roles" className="pt-2 space-y-4">
             <Select
               value={selectedRole}
               onValueChange={setSelectedRole}
-              className="w-48"
+              className="w-40"
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-slate-800 text-white border-slate-700 rounded-md">
                 <SelectValue placeholder="Select Role" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-slate-800 text-white border-slate-700 rounded-md">
                 {highRiskRoleNames.map((roleName) => (
                   <SelectItem key={roleName} value={roleName}>
                     {roleName}
@@ -119,28 +123,28 @@ export default function RBAC() {
               </SelectContent>
             </Select>
 
-            <div className="text-white font-semibold">
+            <div className="text-white font-semibold text-sm">
               Showing results for <span className="text-blue-400">{selectedRole}</span>
             </div>
 
             <table className="w-full text-left text-sm border-collapse border border-slate-700">
               <thead>
                 <tr className="bg-slate-800">
-                  <th className="p-2 border border-slate-700">Privilege</th>
-                  <th className="p-2 border border-slate-700">Granted On</th>
-                  <th className="p-2 border border-slate-700">Object Name</th>
-                  <th className="p-2 border border-slate-700">Grant Option</th>
-                  <th className="p-2 border border-slate-700">Created On</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Privilege</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Granted On</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Object Name</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Grant Option</th>
+                  <th className="p-3 border border-slate-700 font-semibold text-slate-300">Created On</th>
                 </tr>
               </thead>
               <tbody>
                 {(highRiskData[selectedRole] || []).map((item, idx) => (
-                  <tr key={idx} className="even:bg-slate-800 odd:bg-slate-900">
-                    <td className="p-2 border border-slate-700">{item.privilege}</td>
-                    <td className="p-2 border border-slate-700">{item.grantedOn}</td>
-                    <td className="p-2 border border-slate-700">{item.objectName}</td>
-                    <td className="p-2 border border-slate-700">{item.grantOption}</td>
-                    <td className="p-2 border border-slate-700">{item.createdOn}</td>
+                  <tr key={idx} className="even:bg-slate-800 odd:bg-slate-900 hover:bg-slate-700 transition-colors cursor-pointer">
+                    <td className="p-3 border border-slate-700">{item.privilege}</td>
+                    <td className="p-3 border border-slate-700">{item.grantedOn}</td>
+                    <td className="p-3 border border-slate-700">{item.objectName}</td>
+                    <td className="p-3 border border-slate-700">{item.grantOption}</td>
+                    <td className="p-3 border border-slate-700">{item.createdOn}</td>
                   </tr>
                 ))}
               </tbody>
