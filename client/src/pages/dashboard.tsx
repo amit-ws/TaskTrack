@@ -9,6 +9,7 @@ import ExpensiveQueriesSection from "@/components/expensive-queries-section";
 import ObjectUsageSection from "@/components/object-usage-section";
 import LineageSection from "@/components/lineage-section";
 import WarehouseEfficiency from "@/pages/warehouse-efficiency";
+import RBAC from "@/pages/rbac";  // <-- Import RBAC page
 
 export default function Dashboard() {
   const [location, setLocation] = useLocation();
@@ -42,19 +43,22 @@ export default function Dashboard() {
         return <LineageSection />;
       case "warehouse-efficiency":
         return <WarehouseEfficiency />;
+      case "rbac":                 // <-- New RBAC route
+        return <RBAC />;
       default:
         return <OverviewSection />;
     }
   };
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "var(--slate-950)" }}>
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{ backgroundColor: "var(--slate-950)" }}
+    >
       <Sidebar activeSection={activeSection} onSectionChange={handleSectionChange} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-auto p-6">
-          {renderActiveSection()}
-        </main>
+        <main className="flex-1 overflow-auto p-6">{renderActiveSection()}</main>
       </div>
     </div>
   );
