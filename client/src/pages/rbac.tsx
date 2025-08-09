@@ -31,7 +31,7 @@ const orphanedRoles = [
   { roleName: "TEST ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 11:18 PM" },
 ];
 
-const highRiskRoleNames = ["ACCOUNTADMIN", "ORGADMIN", "SECURITYADMIN", "SYSADMIN", "USERADMIN"];
+const highRiskRoleNames = ["Select Role", "ACCOUNTADMIN", "ORGADMIN", "SECURITYADMIN", "SYSADMIN", "USERADMIN"];
 
 const highRiskData: Record<string, any[]> = {
   ORGADMIN: [
@@ -84,7 +84,7 @@ export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
 
   return (
-    <Card className="backdrop-blur-md bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700 rounded-xl shadow-2xl p-6">
+    <Card className="backdrop-blur-md bg-black/80 border border-slate-800 rounded-xl shadow-2xl p-6">
       <CardHeader className="border-b border-slate-700 mb-4">
         <CardTitle className="text-2xl font-bold text-white tracking-wide">
           🛡️ Role-Based Access Control
@@ -92,26 +92,27 @@ export default function RBAC() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="orphaned-roles" className="w-full">
-          <TabsList className="flex gap-2 mb-6 bg-slate-800/40 border border-slate-700 rounded-lg p-1">
+          {/* Left-aligned Tabs */}
+          <TabsList className="flex gap-2 mb-6 bg-black/40 border border-slate-800 rounded-lg p-1 justify-start">
             <TabsTrigger
               value="orphaned-roles"
-              className="text-white text-sm px-4 py-2 rounded-md transition-all duration-200 hover:bg-blue-700/30 data-[state=active]:bg-blue-600/60 data-[state=active]:text-white font-medium"
+              className="text-white text-sm px-4 py-2 rounded-md transition-all data-[state=active]:bg-slate-700 data-[state=active]:text-white font-medium"
             >
               🧩 Orphaned Roles
             </TabsTrigger>
             <TabsTrigger
               value="high-risk-roles"
-              className="text-white text-sm px-4 py-2 rounded-md transition-all duration-200 hover:bg-red-700/30 data-[state=active]:bg-red-600/60 data-[state=active]:text-white font-medium"
+              className="text-white text-sm px-4 py-2 rounded-md transition-all data-[state=active]:bg-slate-700 data-[state=active]:text-white font-medium"
             >
               🔥 High-Risk Roles
             </TabsTrigger>
           </TabsList>
 
           {/* Orphaned Roles */}
-          <TabsContent value="orphaned-roles" className="animate-fade-in space-y-4">
-            <div className="overflow-auto rounded-lg border border-slate-700 shadow-inner">
-              <table className="min-w-full bg-slate-900/60 text-slate-200">
-                <thead className="text-xs uppercase bg-slate-800/70 text-slate-400 border-b border-slate-700">
+          <TabsContent value="orphaned-roles" className="space-y-4">
+            <div className="overflow-auto rounded-lg border border-slate-700">
+              <table className="min-w-full bg-black text-slate-200 text-sm">
+                <thead className="uppercase bg-slate-900 text-slate-400 border-b border-slate-700">
                   <tr>
                     <th className="px-6 py-3 text-left">Role Name</th>
                     <th className="px-6 py-3 text-left">Role Type</th>
@@ -123,11 +124,10 @@ export default function RBAC() {
                     <tr
                       key={role.roleName}
                       className={clsx(
-                        idx % 2 === 0 ? "bg-slate-800/50" : "bg-slate-800/30",
-                        "hover:bg-blue-900/50 transition-colors cursor-pointer"
+                        idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
                       )}
                     >
-                      <td className="px-6 py-4 font-semibold">{role.roleName}</td>
+                      <td className="px-6 py-4 font-medium">{role.roleName}</td>
                       <td className="px-6 py-4">{role.roleType}</td>
                       <td className="px-6 py-4">{role.creationDate}</td>
                     </tr>
@@ -138,13 +138,13 @@ export default function RBAC() {
           </TabsContent>
 
           {/* High-Risk Roles */}
-          <TabsContent value="high-risk-roles" className="animate-fade-in space-y-6">
+          <TabsContent value="high-risk-roles" className="space-y-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="bg-slate-800 text-white border border-slate-600 rounded-md w-52 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <SelectTrigger className="bg-black text-white border border-slate-700 rounded-md w-52 focus:ring-2 focus:ring-slate-600 focus:outline-none">
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-900 text-white border border-slate-700 rounded-md">
+                <SelectContent className="bg-black text-white border border-slate-700 rounded-md">
                   {highRiskRoleNames.map((roleName) => (
                     <SelectItem key={roleName} value={roleName}>
                       {roleName}
@@ -155,13 +155,13 @@ export default function RBAC() {
 
               <div className="text-sm text-slate-300">
                 Viewing privileges for:{" "}
-                <span className="font-bold text-blue-400">{selectedRole}</span>
+                <span className="font-bold text-slate-100">{selectedRole}</span>
               </div>
             </div>
 
-            <div className="overflow-auto rounded-lg border border-slate-700 shadow-inner">
-              <table className="min-w-full bg-slate-900/60 text-slate-200">
-                <thead className="text-xs uppercase bg-slate-800/70 text-slate-400 border-b border-slate-700">
+            <div className="overflow-auto rounded-lg border border-slate-700">
+              <table className="min-w-full bg-black text-slate-200 text-sm">
+                <thead className="uppercase bg-slate-900 text-slate-400 border-b border-slate-700">
                   <tr>
                     <th className="px-6 py-3 text-left">Privilege</th>
                     <th className="px-6 py-3 text-left">Granted On</th>
@@ -175,11 +175,10 @@ export default function RBAC() {
                     <tr
                       key={idx}
                       className={clsx(
-                        idx % 2 === 0 ? "bg-slate-800/50" : "bg-slate-800/30",
-                        "hover:bg-red-900/50 transition-colors cursor-pointer"
+                        idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
                       )}
                     >
-                      <td className="px-6 py-4 font-semibold">{item.privilege}</td>
+                      <td className="px-6 py-4 font-medium">{item.privilege}</td>
                       <td className="px-6 py-4">{item.grantedOn}</td>
                       <td className="px-6 py-4">{item.objectName}</td>
                       <td className="px-6 py-4">{item.grantOption}</td>
