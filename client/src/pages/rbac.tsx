@@ -4,15 +4,16 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const orphanedRoles = [
-  { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "2025-07-28 12:38:36.199 -0700" },
-  { roleName: "DEVELOPER", roleType: "INSTANCE ROLE", creationDate: "2025-07-28 12:38:36.247 -0700" },
-  { roleName: "ENGINEER", roleType: "INSTANCE ROLE", creationDate: "2025-07-28 12:38:36.260 -0700" },
-  { roleName: "READER", roleType: "INSTANCE ROLE", creationDate: "2025-07-28 12:38:36.285 -0700" },
-  { roleName: "VIEWER", roleType: "INSTANCE ROLE", creationDate: "2025-07-28 12:38:36.312 -0700" },
-  { roleName: "USER", roleType: "INSTANCE ROLE", creationDate: "2025-07-28 12:38:58.236 -0700" },
-  { roleName: "SAMPLE ROLE 1", roleType: "ROLE", creationDate: "2025-08-03 13:34:24.180 -0700" },
-  { roleName: "TEST ROLE 1", roleType: "ROLE", creationDate: "2025-08-03 23:18:35.746 -0700" },
+  { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "DEVELOPER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "ENGINEER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "READER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "VIEWER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "USER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "SAMPLE ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 1:34 PM" },
+  { roleName: "TEST ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 11:18 PM" },
 ];
+
 
 const highRiskRoleNames = ["ACCOUNTADMIN", "ORGADMIN", "SECURITYADMIN", "SYSADMIN", "USERADMIN"];
 
@@ -23,45 +24,46 @@ const highRiskData: Record<string, any[]> = {
       grantedOn: "ACCOUNT",
       objectName: "ZM08212",
       grantOption: "TRUE",
-      createdOn: "2025-07-28 12:32:43.829 -0700",
+      createdOn: "Jul 28, 2025, 12:32 PM",
     },
     {
       privilege: "CREATE LISTING",
       grantedOn: "ACCOUNT",
       objectName: "ZM08212",
       grantOption: "TRUE",
-      createdOn: "2025-07-28 12:32:43.830 -0700",
+      createdOn: "Jul 28, 2025, 12:32 PM",
     },
     {
       privilege: "MANAGE LISTING AUTO FULFILLMENT",
       grantedOn: "ACCOUNT",
       objectName: "ZM08212",
       grantOption: "TRUE",
-      createdOn: "2025-07-28 12:32:43.830 -0700",
+      createdOn: "Jul 28, 2025, 12:32 PM",
     },
     {
       privilege: "PURCHASE DATA EXCHANGE LISTING",
       grantedOn: "ACCOUNT",
       objectName: "ZM08212",
       grantOption: "TRUE",
-      createdOn: "2025-07-28 12:32:43.831 -0700",
+      createdOn: "Jul 28, 2025, 12:32 PM",
     },
     {
       privilege: "MANAGE ORGANIZATION SUPPORT CASES",
       grantedOn: "ACCOUNT",
       objectName: "ZM08212",
       grantOption: "TRUE",
-      createdOn: "2025-07-28 12:32:43.832 -0700",
+      createdOn: "Jul 28, 2025, 12:32 PM",
     },
     {
       privilege: "APPLY TAG",
       grantedOn: "ACCOUNT",
       objectName: "ZM08212",
       grantOption: "TRUE",
-      createdOn: "2025-07-28 12:32:43.832 -0700",
+      createdOn: "Jul 28, 2025, 12:32 PM",
     },
   ],
 };
+
 
 export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
