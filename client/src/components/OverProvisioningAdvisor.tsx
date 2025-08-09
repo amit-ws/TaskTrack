@@ -89,7 +89,7 @@ export default function OverProvisioningAdvisor({
         {data.map((row) => (
           <Card
             key={row.name}
-            className="bg-slate-900 border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+            className="bg-black border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden"
           >
             <CardHeader className="pb-0">
               <div className="flex items-start justify-between gap-3">

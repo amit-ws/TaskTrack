@@ -41,7 +41,7 @@ export default function UnusedWarehouseList({ timeWindow }: { timeWindow: string
           return (
             <Card
               key={r.name}
-              className="bg-slate-900 border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="bg-black border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
               <CardHeader className="pb-0">
                 <div className="flex items-start justify-between gap-3">

@@ -56,7 +56,7 @@ export default function IdleTimeMonitor({ timeWindow }: { timeWindow: string }) 
         {mockData.map((wh) => (
           <Card
             key={wh.name}
-            className="bg-slate-900 border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300"
+          className="bg-black border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
             <CardHeader>
               <CardTitle className="flex justify-between items-center text-white">
