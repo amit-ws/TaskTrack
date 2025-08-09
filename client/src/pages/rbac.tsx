@@ -19,6 +19,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import clsx from "clsx";
+import { Button } from "@/components/ui/button"; // Assumes shadcn button is available
 
 const orphanedRoles = [
   { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
@@ -92,17 +93,16 @@ export default function RBAC() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="orphaned-roles" className="w-full">
-          {/* Left-aligned Tabs */}
           <TabsList className="flex gap-2 mb-6 bg-black/40 border border-slate-800 rounded-lg p-1 justify-start">
             <TabsTrigger
               value="orphaned-roles"
-              className="text-white text-sm px-4 py-2 rounded-md transition-all data-[state=active]:bg-slate-700 data-[state=active]:text-white font-medium"
+              className="text-white text-sm px-4 py-2 rounded-md transition-all data-[state=active]:bg-slate-700 font-medium"
             >
               🧩 Orphaned Roles
             </TabsTrigger>
             <TabsTrigger
               value="high-risk-roles"
-              className="text-white text-sm px-4 py-2 rounded-md transition-all data-[state=active]:bg-slate-700 data-[state=active]:text-white font-medium"
+              className="text-white text-sm px-4 py-2 rounded-md transition-all data-[state=active]:bg-slate-700 font-medium"
             >
               🔥 High-Risk Roles
             </TabsTrigger>
@@ -111,12 +111,13 @@ export default function RBAC() {
           {/* Orphaned Roles */}
           <TabsContent value="orphaned-roles" className="space-y-4">
             <div className="overflow-auto rounded-lg border border-slate-700">
-              <table className="min-w-full bg-black text-slate-200 text-sm">
+              <table className="min-w-full bg-black text-slate-200 text-xs">
                 <thead className="uppercase bg-slate-900 text-slate-400 border-b border-slate-700">
                   <tr>
                     <th className="px-6 py-3 text-left">Role Name</th>
                     <th className="px-6 py-3 text-left">Role Type</th>
                     <th className="px-6 py-3 text-left">Created At</th>
+                    <th className="px-6 py-3 text-left">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -127,9 +128,17 @@ export default function RBAC() {
                         idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
                       )}
                     >
-                      <td className="px-6 py-4 font-medium">{role.roleName}</td>
-                      <td className="px-6 py-4">{role.roleType}</td>
-                      <td className="px-6 py-4">{role.creationDate}</td>
+                      <td className="px-6 py-3 font-medium">{role.roleName}</td>
+                      <td className="px-6 py-3">{role.roleType}</td>
+                      <td className="px-6 py-3">{role.creationDate}</td>
+                      <td className="px-6 py-3">
+                        <Button
+                          variant="ghost"
+                          className="text-red-400 hover:text-red-500 px-2 py-1 text-xs border border-red-400 hover:border-red-500 rounded transition-all"
+                        >
+                          Delete Role
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -141,7 +150,7 @@ export default function RBAC() {
           <TabsContent value="high-risk-roles" className="space-y-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="bg-black text-white border border-slate-700 rounded-md w-52 focus:ring-2 focus:ring-slate-600 focus:outline-none">
+                <SelectTrigger className="bg-black text-white border border-slate-700 rounded-md w-52 focus:ring-2 focus:ring-slate-600">
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent className="bg-black text-white border border-slate-700 rounded-md">
@@ -153,14 +162,14 @@ export default function RBAC() {
                 </SelectContent>
               </Select>
 
-              <div className="text-sm text-slate-300">
+              <div className="text-xs text-slate-300">
                 Viewing privileges for:{" "}
                 <span className="font-bold text-slate-100">{selectedRole}</span>
               </div>
             </div>
 
             <div className="overflow-auto rounded-lg border border-slate-700">
-              <table className="min-w-full bg-black text-slate-200 text-sm">
+              <table className="min-w-full bg-black text-slate-200 text-xs">
                 <thead className="uppercase bg-slate-900 text-slate-400 border-b border-slate-700">
                   <tr>
                     <th className="px-6 py-3 text-left">Privilege</th>
@@ -178,11 +187,11 @@ export default function RBAC() {
                         idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
                       )}
                     >
-                      <td className="px-6 py-4 font-medium">{item.privilege}</td>
-                      <td className="px-6 py-4">{item.grantedOn}</td>
-                      <td className="px-6 py-4">{item.objectName}</td>
-                      <td className="px-6 py-4">{item.grantOption}</td>
-                      <td className="px-6 py-4">{item.createdOn}</td>
+                      <td className="px-6 py-3 font-medium">{item.privilege}</td>
+                      <td className="px-6 py-3">{item.grantedOn}</td>
+                      <td className="px-6 py-3">{item.objectName}</td>
+                      <td className="px-6 py-3">{item.grantOption}</td>
+                      <td className="px-6 py-3">{item.createdOn}</td>
                     </tr>
                   ))}
                 </tbody>
