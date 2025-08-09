@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const orphanedRoles = [
   { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "2025-07-28 12:38:36.199 -0700" },
@@ -14,21 +14,9 @@ const orphanedRoles = [
   { roleName: "TEST ROLE 1", roleType: "ROLE", creationDate: "2025-08-03 23:18:35.746 -0700" },
 ];
 
-const highRiskRoleNames = [
-  "ACCOUNTADMIN",
-  "ORGADMIN",
-  "SECURITYADMIN",
-  "SYSADMIN",
-  "USERADMIN",
-];
+const highRiskRoleNames = ["ACCOUNTADMIN", "ORGADMIN", "SECURITYADMIN", "SYSADMIN", "USERADMIN"];
 
-const highRiskData: Record<string, Array<{
-  privilege: string;
-  grantedOn: string;
-  objectName: string;
-  grantOption: string;
-  createdOn: string;
-}>> = {
+const highRiskData: Record<string, any[]> = {
   ORGADMIN: [
     {
       privilege: "MANAGE BILLING",
@@ -73,96 +61,93 @@ const highRiskData: Record<string, Array<{
       createdOn: "2025-07-28 12:32:43.832 -0700",
     },
   ],
-  // Add more role data if needed...
 };
 
 export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
 
   return (
-    <div className="space-y-6 bg-black min-h-screen p-8 text-slate-300">
-      <h1 className="text-3xl font-bold text-white mb-6">RBAC</h1>
+    <Card className="bg-slate-900 border-slate-800 shadow-lg">
+      <CardHeader>
+        <CardTitle>RBAC</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="orphaned-roles" className="w-full">
+          <TabsList>
+            <TabsTrigger value="orphaned-roles">Orphaned / Unused Roles</TabsTrigger>
+            <TabsTrigger value="high-risk-roles">High Risk Roles</TabsTrigger>
+          </TabsList>
 
-      <Tabs defaultValue="orphaned" className="space-y-4">
-        <TabsList className="bg-slate-900 rounded-md p-1">
-          <TabsTrigger value="orphaned" className="text-white">Orphaned / Unused Roles</TabsTrigger>
-          <TabsTrigger value="highrisk" className="text-white">High Risk Roles</TabsTrigger>
-        </TabsList>
-
-        {/* Section 1 - Orphaned / Unused Roles */}
-        <TabsContent value="orphaned" className="bg-slate-900 rounded-md p-6">
-          <Card className="bg-slate-800 border border-slate-700 shadow-lg">
-            <CardContent className="p-0 overflow-x-auto">
-              <table className="min-w-full table-auto border-collapse border border-slate-700 text-left text-sm">
-                <thead className="bg-slate-700 text-slate-200">
-                  <tr>
-                    <th className="border border-slate-600 px-4 py-2">Role Name</th>
-                    <th className="border border-slate-600 px-4 py-2">Role Type</th>
-                    <th className="border border-slate-600 px-4 py-2">Creation Date</th>
+          {/* Orphaned Roles Tab */}
+          <TabsContent value="orphaned-roles" className="pt-4">
+            <table className="w-full text-left text-sm border-collapse border border-slate-700">
+              <thead>
+                <tr className="bg-slate-800">
+                  <th className="p-2 border border-slate-700">Role Name</th>
+                  <th className="p-2 border border-slate-700">Role Type</th>
+                  <th className="p-2 border border-slate-700">Creation Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orphanedRoles.map((role) => (
+                  <tr key={role.roleName} className="even:bg-slate-800 odd:bg-slate-900">
+                    <td className="p-2 border border-slate-700">{role.roleName}</td>
+                    <td className="p-2 border border-slate-700">{role.roleType}</td>
+                    <td className="p-2 border border-slate-700">{role.creationDate}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {orphanedRoles.map((role) => (
-                    <tr key={role.roleName} className="even:bg-slate-900 odd:bg-slate-800 hover:bg-slate-700">
-                      <td className="border border-slate-700 px-4 py-2">{role.roleName}</td>
-                      <td className="border border-slate-700 px-4 py-2">{role.roleType}</td>
-                      <td className="border border-slate-700 px-4 py-2">{role.creationDate}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                ))}
+              </tbody>
+            </table>
+          </TabsContent>
 
-        {/* Section 2 - High Risk Roles */}
-        <TabsContent value="highrisk" className="bg-slate-900 rounded-md p-6 space-y-4">
-          <Select value={selectedRole} onValueChange={setSelectedRole} className="w-[220px] bg-slate-800 border border-slate-700 text-white">
-            <SelectTrigger>
-              <SelectValue placeholder="Select Role" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800 text-white border border-slate-700">
-              {highRiskRoleNames.map((roleName) => (
-                <SelectItem key={roleName} value={roleName}>
-                  {roleName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* High Risk Roles Tab */}
+          <TabsContent value="high-risk-roles" className="pt-4 space-y-4">
+            <Select
+              value={selectedRole}
+              onValueChange={setSelectedRole}
+              className="w-48"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Role" />
+              </SelectTrigger>
+              <SelectContent>
+                {highRiskRoleNames.map((roleName) => (
+                  <SelectItem key={roleName} value={roleName}>
+                    {roleName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Card className="bg-slate-800 border border-slate-700 shadow-lg">
-            <CardContent className="p-0 overflow-x-auto">
-              <table className="min-w-full table-auto border-collapse border border-slate-700 text-left text-sm">
-                <thead className="bg-slate-700 text-slate-200">
-                  <tr>
-                    <th className="border border-slate-600 px-4 py-2">Privilege</th>
-                    <th className="border border-slate-600 px-4 py-2">Granted On</th>
-                    <th className="border border-slate-600 px-4 py-2">Object Name</th>
-                    <th className="border border-slate-600 px-4 py-2">Grant Option</th>
-                    <th className="border border-slate-600 px-4 py-2">Created On</th>
+            <div className="text-white font-semibold">
+              Showing results for <span className="text-blue-400">{selectedRole}</span>
+            </div>
+
+            <table className="w-full text-left text-sm border-collapse border border-slate-700">
+              <thead>
+                <tr className="bg-slate-800">
+                  <th className="p-2 border border-slate-700">Privilege</th>
+                  <th className="p-2 border border-slate-700">Granted On</th>
+                  <th className="p-2 border border-slate-700">Object Name</th>
+                  <th className="p-2 border border-slate-700">Grant Option</th>
+                  <th className="p-2 border border-slate-700">Created On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(highRiskData[selectedRole] || []).map((item, idx) => (
+                  <tr key={idx} className="even:bg-slate-800 odd:bg-slate-900">
+                    <td className="p-2 border border-slate-700">{item.privilege}</td>
+                    <td className="p-2 border border-slate-700">{item.grantedOn}</td>
+                    <td className="p-2 border border-slate-700">{item.objectName}</td>
+                    <td className="p-2 border border-slate-700">{item.grantOption}</td>
+                    <td className="p-2 border border-slate-700">{item.createdOn}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {(highRiskData[selectedRole] || []).map((row, idx) => (
-                    <tr key={idx} className="even:bg-slate-900 odd:bg-slate-800 hover:bg-slate-700">
-                      <td className="border border-slate-700 px-4 py-2">{row.privilege}</td>
-                      <td className="border border-slate-700 px-4 py-2">{row.grantedOn}</td>
-                      <td className="border border-slate-700 px-4 py-2">{row.objectName}</td>
-                      <td className="border border-slate-700 px-4 py-2">{row.grantOption}</td>
-                      <td className="border border-slate-700 px-4 py-2">{row.createdOn}</td>
-                    </tr>
-                  ))}
-                  {(!highRiskData[selectedRole] || highRiskData[selectedRole].length === 0) && (
-                    <tr>
-                      <td colSpan={5} className="text-center py-6 text-slate-500">No data available</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+                ))}
+              </tbody>
+            </table>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 }
