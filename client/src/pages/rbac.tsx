@@ -13,6 +13,7 @@ const orphanedRoles = [
   { roleName: "SAMPLE ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 1:34 PM" },
   { roleName: "TEST ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 11:18 PM" },
 ];
+
 const highRiskRoleNames = ["ACCOUNTADMIN", "ORGADMIN", "SECURITYADMIN", "SYSADMIN", "USERADMIN"];
 
 const highRiskData: Record<string, any[]> = {
@@ -66,11 +67,11 @@ export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
 
   return (
-    <Card className="bg-slate-900 border-slate-800 shadow-lg rounded-lg">
-      <CardHeader className="border-b border-slate-700">
-        <CardTitle className="text-xl text-white font-semibold">RBAC</CardTitle>
+    <Card className="bg-slate-900 border border-slate-700 rounded-lg shadow-lg">
+      <CardHeader className="border-b border-slate-700 px-6 py-4">
+        <CardTitle className="text-white text-xl font-semibold">RBAC Management</CardTitle>
       </CardHeader>
-      <CardContent className="px-4 py-6">
+      <CardContent className="px-6 py-5">
         <Tabs defaultValue="orphaned-roles" className="w-full">
           <TabsList className="mb-6 border-b border-slate-700">
             <TabsTrigger
@@ -88,27 +89,32 @@ export default function RBAC() {
           </TabsList>
 
           {/* Orphaned Roles Tab */}
-          <TabsContent value="orphaned-roles" className="pt-2">
-            <div className="overflow-x-auto rounded-lg shadow-md">
-              <table className="min-w-full bg-slate-800 text-white rounded-lg">
-                <thead className="bg-slate-900 text-slate-300 uppercase text-xs font-semibold tracking-wider select-none">
+          <TabsContent value="orphaned-roles" className="pt-1">
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-slate-700 rounded-lg overflow-hidden">
+                <thead className="bg-slate-800">
                   <tr>
-                    <th className="px-6 py-3 border-b border-slate-700">Role Name</th>
-                    <th className="px-6 py-3 border-b border-slate-700">Role Type</th>
-                    <th className="px-6 py-3 border-b border-slate-700">Creation Date</th>
+                    {["Role Name", "Role Type", "Creation Date"].map((header) => (
+                      <th
+                        key={header}
+                        className="text-left px-6 py-3 text-slate-300 text-sm font-semibold tracking-wide select-none"
+                      >
+                        {header}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {orphanedRoles.map((role, i) => (
+                  {orphanedRoles.map((role, idx) => (
                     <tr
                       key={role.roleName}
-                      className={`${
-                        i % 2 === 0 ? "bg-slate-700" : "bg-slate-800"
-                      } hover:bg-blue-900 transition-colors cursor-pointer`}
+                      className={`cursor-pointer transition-colors ${
+                        idx % 2 === 0 ? "bg-slate-900" : "bg-slate-800"
+                      } hover:bg-blue-900`}
                     >
-                      <td className="px-6 py-4 font-medium whitespace-nowrap">{role.roleName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{role.roleType}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{role.creationDate}</td>
+                      <td className="px-6 py-3 text-white whitespace-nowrap">{role.roleName}</td>
+                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{role.roleType}</td>
+                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{role.creationDate}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -117,17 +123,21 @@ export default function RBAC() {
           </TabsContent>
 
           {/* High Risk Roles Tab */}
-          <TabsContent value="high-risk-roles" className="pt-2 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-start gap-4">
+          <TabsContent value="high-risk-roles" className="pt-1 space-y-6">
+            <div className="max-w-xs">
+              <label className="block mb-2 text-sm font-semibold text-slate-300 select-none" htmlFor="role-select">
+                Select Role
+              </label>
               <Select
+                id="role-select"
                 value={selectedRole}
                 onValueChange={setSelectedRole}
-                className="w-48"
+                className="bg-slate-800 text-white rounded-md border border-slate-700 w-full"
               >
-                <SelectTrigger className="bg-slate-800 text-white border-slate-700 rounded-md">
-                  <SelectValue placeholder="Select Role" />
+                <SelectTrigger className="px-3 py-2">
+                  <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 text-white border-slate-700 rounded-md max-h-60 overflow-auto">
+                <SelectContent className="bg-slate-800 text-white border border-slate-700 rounded-md max-h-60 overflow-auto">
                   {highRiskRoleNames.map((roleName) => (
                     <SelectItem key={roleName} value={roleName}>
                       {roleName}
@@ -135,38 +145,48 @@ export default function RBAC() {
                   ))}
                 </SelectContent>
               </Select>
-
-              <div className="text-white font-semibold text-sm whitespace-nowrap">
-                Showing results for <span className="text-blue-400">{selectedRole}</span>
-              </div>
             </div>
 
-            <div className="overflow-x-auto rounded-lg shadow-md">
-              <table className="min-w-full bg-slate-800 text-white rounded-lg">
-                <thead className="bg-slate-900 text-slate-300 uppercase text-xs font-semibold tracking-wider select-none">
+            <div className="text-white font-semibold text-lg">
+              Showing results for <span className="text-blue-400">{selectedRole}</span>
+            </div>
+
+            <div className="overflow-x-auto rounded-lg border border-slate-700 shadow-sm">
+              <table className="min-w-full table-auto border-collapse border border-slate-700">
+                <thead className="bg-slate-800">
                   <tr>
-                    <th className="px-6 py-3 border-b border-slate-700">Privilege</th>
-                    <th className="px-6 py-3 border-b border-slate-700">Granted On</th>
-                    <th className="px-6 py-3 border-b border-slate-700">Object Name</th>
-                    <th className="px-6 py-3 border-b border-slate-700">Grant Option</th>
-                    <th className="px-6 py-3 border-b border-slate-700">Created On</th>
+                    {["Privilege", "Granted On", "Object Name", "Grant Option", "Created On"].map((header) => (
+                      <th
+                        key={header}
+                        className="text-left px-6 py-3 text-slate-300 text-sm font-semibold tracking-wide select-none"
+                      >
+                        {header}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {(highRiskData[selectedRole] || []).map((item, idx) => (
                     <tr
                       key={idx}
-                      className={`${
-                        idx % 2 === 0 ? "bg-slate-700" : "bg-slate-800"
-                      } hover:bg-blue-900 transition-colors cursor-pointer`}
+                      className={`cursor-pointer transition-colors ${
+                        idx % 2 === 0 ? "bg-slate-900" : "bg-slate-800"
+                      } hover:bg-blue-900`}
                     >
-                      <td className="px-6 py-4 font-medium whitespace-nowrap">{item.privilege}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.grantedOn}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.objectName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.grantOption}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.createdOn}</td>
+                      <td className="px-6 py-3 text-white whitespace-nowrap">{item.privilege}</td>
+                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.grantedOn}</td>
+                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.objectName}</td>
+                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.grantOption}</td>
+                      <td className="px-6 py-3 text-slate-300 whitespace-nowrap">{item.createdOn}</td>
                     </tr>
                   ))}
+                  {(!highRiskData[selectedRole] || highRiskData[selectedRole].length === 0) && (
+                    <tr>
+                      <td colSpan={5} className="text-center py-6 text-slate-400 italic">
+                        No data available for this role.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
