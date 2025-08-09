@@ -26,6 +26,9 @@ export default function WarehouseEfficiency() {
         </Select>
       </div>
 
+
+      <div className="space-y-6 bg-black min-h-screen px-6 py-8">
+
       {/* Idle Time Monitor */}
       <Card className="bg-slate-900 border-slate-800 shadow-lg">
         <CardHeader className="flex flex-row items-center space-x-3 pb-4">
@@ -58,6 +61,10 @@ export default function WarehouseEfficiency() {
           <UnusedWarehouseList timeWindow={timeWindow} />
         </CardContent>
       </Card>
+        </div>
+
+
+
     </div>
   );
 }

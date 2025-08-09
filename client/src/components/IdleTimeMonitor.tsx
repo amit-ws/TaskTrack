@@ -47,16 +47,16 @@ const mockData = [
 export default function IdleTimeMonitor({ timeWindow }: { timeWindow: string }) {
   return (
     <div className="space-y-6">
-      {/* <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold text-white">Idle Time Monitor</h3>
         <div className="text-sm text-slate-400">Window: last {timeWindow} days</div>
-      </div> */}
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {mockData.map((wh) => (
           <Card
             key={wh.name}
-          className="bg-black border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300"
+            className="bg-slate-800 border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
             <CardHeader>
               <CardTitle className="flex justify-between items-center text-white">
