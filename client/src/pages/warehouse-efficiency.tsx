@@ -1,7 +1,7 @@
 import { useState } from "react";
-import IdleTimeMonitor from "@/components/warehouse-efficiency/IdleTimeMonitor";
-import OverProvisioningAdvisor from "@/components/warehouse-efficiency/OverProvisioningAdvisor";
-import UnusedWarehouseList from "@/components/warehouse-efficiency/UnusedWarehouseList";
+import IdleTimeMonitor from "@/components/IdleTimeMonitor";
+import OverProvisioningAdvisor from "@/components/OverProvisioningAdvisor";
+import UnusedWarehouseList from "@/components/UnusedWarehouseList";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
