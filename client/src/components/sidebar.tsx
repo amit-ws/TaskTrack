@@ -1,4 +1,4 @@
-import { Snowflake, Users, Activity, DollarSign, Database, GitBranch, User } from "lucide-react";
+import { Snowflake, Users, Activity, DollarSign, Database, GitBranch, User, circle-gauge } from "lucide-react";
 
 interface SidebarProps {
   activeSection: string;
@@ -13,6 +13,7 @@ export default function Sidebar({ activeSection, onSectionChange }: SidebarProps
     { id: "expensive-queries", name: "Expensive Queries", icon: DollarSign },
     { id: "object-usage", name: "Object Usage", icon: Database },
     { id: "lineage", name: "Lineage Tracking", icon: GitBranch },
+    { id: "warehouse-efficiency", label: "Warehouse Efficiency", href: "/warehouse-efficiency", icon: circle-gauge },
   ];
 
   return (
