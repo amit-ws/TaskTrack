@@ -46,20 +46,20 @@ const mockData = [
 
 export default function IdleTimeMonitor({ timeWindow }: { timeWindow: string }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Idle Time Monitor</h3>
-        <div className="text-sm text-muted-foreground">Window: last {timeWindow} days</div>
+        <h3 className="text-xl font-semibold text-white">Idle Time Monitor</h3>
+        <div className="text-sm text-slate-400">Window: last {timeWindow} days</div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {mockData.map((wh) => (
           <Card
             key={wh.name}
-            className="border border-gray-200 shadow-sm hover:shadow-md transition"
+            className="bg-slate-900 border border-slate-800 shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
             <CardHeader>
-              <CardTitle className="flex justify-between items-center">
+              <CardTitle className="flex justify-between items-center text-white">
                 {wh.name}
                 <Badge
                   variant={
@@ -72,18 +72,18 @@ export default function IdleTimeMonitor({ timeWindow }: { timeWindow: string }) 
                 </Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-1 text-sm text-gray-600">
+            <CardContent className="space-y-1 text-sm text-slate-300">
               <p>
-                <strong>Last Query:</strong> {wh.lastQuery || "—"}
+                <strong className="text-white">Last Query:</strong> {wh.lastQuery || "—"}
               </p>
               <p>
-                <strong>Last Resume:</strong> {wh.lastResume || "—"}
+                <strong className="text-white">Last Resume:</strong> {wh.lastResume || "—"}
               </p>
               <p>
-                <strong>Last Suspend:</strong> {wh.lastSuspend || "—"}
+                <strong className="text-white">Last Suspend:</strong> {wh.lastSuspend || "—"}
               </p>
               <p>
-                <strong>State:</strong> {wh.state}
+                <strong className="text-white">State:</strong> {wh.state}
               </p>
             </CardContent>
           </Card>
