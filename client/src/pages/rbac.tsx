@@ -15,16 +15,16 @@ import {
 } from "@/components/ui/tooltip";
 
 const users = [
-  { id: "API_USER", name: "API User" },
-  { id: "AMITP", name: "Amit P" },
-  { id: "DEV_USER", name: "Developer User" },
-  { id: "VMAMIDI", name: "V Mamidi" },
+  { id: "API_USER", name: "API_USER" },
+  { id: "AMITP", name: "AMITP" },
+  { id: "DEV_USER", name: "DEV_USER" },
+  { id: "VMAMIDI", name: "VMAMIDI" },
 ];
 
 const graphData: Record<string, any> = {
   API_USER: {
     name: "API_USER",
-    type: "user",
+    // type: "user",
     children: [
       {
         name: "Roles",
@@ -77,7 +77,7 @@ export default function RBACGraphTab() {
 
   const typeColors: Record<string, { card: string; badge: string; text: string }> = {
     user: { card: "border-blue-500 bg-[#0d1b2a]", badge: "bg-blue-900 text-blue-300", text: "text-blue-400" },
-    // category: { card: "border-green-500 bg-[#0d2a1d]", badge: "bg-green-900 text-green-300", text: "text-green-400" },
+    category: { card: "border-green-500 bg-[#0d2a1d]", badge: "bg-green-900 text-green-300", text: "text-green-400" },
     role: { card: "border-purple-500 bg-[#1a1425]", badge: "bg-purple-900 text-purple-300", text: "text-purple-400" },
   };
 
