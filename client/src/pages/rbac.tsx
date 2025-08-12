@@ -1,21 +1,27 @@
 import React, { useState } from "react";
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  Handle,
-  Position,
-} from "reactflow";
-import "reactflow/dist/style.css";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { UserIcon } from "lucide-react";
 
 const users = [
-  { id: "API_USER", name: "API_USER" },
-  { id: "AMITP", name: "AMITP" },
-  { id: "DEV_USER", name: "DEV_USER" },
-  { id: "VMAMIDI", name: "VMAMIDI" },
+  { id: "API_USER", name: "API User" },
+  { id: "AMITP", name: "Amit P" },
+  { id: "DEV_USER", name: "Developer User" },
+  { id: "VMAMIDI", name: "V Mamidi" },
 ];
 
-// Graph Data for API_USER
 const graphData: Record<string, any> = {
   API_USER: {
     name: "API_USER",
@@ -67,110 +73,93 @@ const graphData: Record<string, any> = {
   },
 };
 
-const nodeStyle = {
-  borderRadius: "12px",
-  padding: "10px",
-  color: "#fff",
-  border: "1px solid #ddd",
-  textAlign: "center",
-  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-};
+export default function RBACGraphTab() {
+  const [selectedUser, setSelectedUser] = useState<string>("API_USER");
 
-const gradients: Record<string, string> = {
-  user: "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)",
-  category: "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)",
-  role: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
-};
-
-function PrivilegesList({ privileges }: { privileges?: Record<string, string[]> }) {
-  if (!privileges) return null;
-  return (
-    <div style={{ fontSize: "0.8em", marginTop: "6px" }}>
-      {Object.entries(privileges).map(([priv, tables]) => (
-        <div key={priv} style={{ marginBottom: "4px" }}>
-          <strong>{priv}:</strong> {tables.join(", ")}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const CustomNode = ({ data }: { data: any }) => {
-  return (
-    <div style={{ ...nodeStyle, background: gradients[data.type] || "#ccc" }}>
-      <Handle type="target" position={Position.Top} />
-      <div style={{ fontWeight: "bold" }}>{data.label}</div>
-      <PrivilegesList privileges={data.privileges} />
-      <Handle type="source" position={Position.Bottom} />
-    </div>
-  );
-};
-
-const nodeTypes = { custom: CustomNode };
-
-export default function UserGraphTab() {
-  const [selectedUser, setSelectedUser] = useState(users[0].id);
-
-  const buildGraph = (root: any, x = 0, y = 0, level = 0) => {
-    const id = root.name;
-    const node = {
-      id,
-      type: "custom",
-      position: { x, y: y + level * 150 },
-      data: { label: root.name, type: root.type, privileges: root.privileges },
-    };
-
-    let nodes = [node];
-    let edges: any[] = [];
-
-    root.children?.forEach((child: any, index: number) => {
-      const childX = x + (index - (root.children.length - 1) / 2) * 250;
-      const childY = y + 150;
-      const childGraph = buildGraph(child, childX, childY, level + 1);
-      nodes = [...nodes, ...childGraph.nodes];
-      edges = [
-        ...edges,
-        ...childGraph.edges,
-        { id: `${id}-${child.name}`, source: id, target: child.name },
-      ];
-    });
-
-    return { nodes, edges };
+  const renderPrivileges = (privileges: Record<string, string[]>) => {
+    if (!privileges) return null;
+    return (
+      <div className="flex flex-col items-start mt-1 space-y-1">
+        {Object.entries(privileges).map(([priv, users]) => (
+          <TooltipProvider key={priv}>
+            <Tooltip>
+              <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-800">
+                {priv} <span className="text-gray-500">({users.length})</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="text-sm space-y-1">
+                  {users.map((u, i) => (
+                    <div key={i}>{u}</div>
+                  ))}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ))}
+      </div>
+    );
   };
 
-  const { nodes, edges } = buildGraph(graphData[selectedUser]);
+  const renderNode = (node: any) => {
+    return (
+      <div className="flex flex-col items-center">
+        <Card
+          className={`px-4 py-2 rounded-lg shadow-md border border-gray-200 ${
+            node.type === "user"
+              ? "bg-gradient-to-r from-purple-50 to-purple-100"
+              : node.type === "category"
+              ? "bg-gradient-to-r from-indigo-50 to-indigo-100"
+              : "bg-gradient-to-r from-blue-50 to-blue-100"
+          }`}
+        >
+          <div className="font-semibold text-gray-800">{node.name}</div>
+          {renderPrivileges(node.privileges)}
+        </Card>
+
+        {node.children && node.children.length > 0 && (
+          <div className="flex flex-col items-center mt-4">
+            <div className="h-6 w-px bg-gray-400"></div>
+            <div className="flex space-x-8">
+              {node.children.map((child: any, idx: number) => (
+                <div key={idx} className="flex flex-col items-center">
+                  {renderNode(child)}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const userGraph = graphData[selectedUser];
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Dropdown */}
-      <div style={{ padding: "10px", background: "#f5f5f5" }}>
-        <select
-          value={selectedUser}
-          onChange={(e) => setSelectedUser(e.target.value)}
-          style={{ padding: "5px 10px", fontSize: "14px" }}
-        >
-          {users.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </select>
+    <div className="p-6">
+      {/* User Selector */}
+      <div className="flex items-center mb-6 space-x-4">
+        <Select value={selectedUser} onValueChange={setSelectedUser}>
+          <SelectTrigger className="w-64">
+            <SelectValue placeholder="Select a user" />
+          </SelectTrigger>
+          <SelectContent>
+            {users.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                {user.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex items-center space-x-2">
+          <UserIcon className="w-5 h-5 text-gray-700" />
+          <span className="font-medium text-gray-800">
+            {users.find((u) => u.id === selectedUser)?.name}
+          </span>
+        </div>
       </div>
 
       {/* Graph */}
-      <div style={{ flex: 1 }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          fitView
-          fitViewOptions={{ padding: 0.3 }}
-        >
-          <MiniMap />
-          <Controls />
-          <Background />
-        </ReactFlow>
-      </div>
+      <div className="flex justify-center">{userGraph && renderNode(userGraph)}</div>
     </div>
   );
 }
