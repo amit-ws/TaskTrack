@@ -1,7 +1,18 @@
 import React, { useState } from "react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { UserIcon } from "lucide-react";
 
 const users = [
@@ -13,10 +24,16 @@ const graphData = {
   User_1: {
     roles: {
       Role1: {
-        privileges: { SELECT: ["UserA", "UserB", "UserC", "UserD", "UserE"], UPDATE: ["UserF"] },
+        privileges: {
+          SELECT: ["UserA", "UserB", "UserC", "UserD", "UserE"],
+          UPDATE: ["UserF"],
+        },
         children: {
           Role2: {
-            privileges: { SELECT: ["UserG", "UserH", "UserI"], UPDATE: ["UserJ", "UserK"] },
+            privileges: {
+              SELECT: ["UserG", "UserH", "UserI"],
+              UPDATE: ["UserJ", "UserK"],
+            },
             children: {
               Role3: {
                 privileges: { SELECT: ["UserL", "UserM"], UPDATE: ["UserN"] },
@@ -27,7 +44,10 @@ const graphData = {
         },
       },
     },
-    directGrants: { SELECT: ["UserO", "UserP"], INSERT: ["UserQ", "UserR", "UserS"] },
+    directGrants: {
+      SELECT: ["UserO", "UserP"],
+      INSERT: ["UserQ", "UserR", "UserS"],
+    },
   },
 };
 
@@ -38,7 +58,7 @@ export default function RBACGraphTab() {
     return Object.entries(privileges).map(([priv, users]) => (
       <TooltipProvider key={priv}>
         <Tooltip>
-          <TooltipTrigger className="text-sm cursor-pointer hover:underline">
+          <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-800">
             {priv} <span className="text-gray-500">({users.length})</span>
           </TooltipTrigger>
           <TooltipContent>
@@ -57,7 +77,7 @@ export default function RBACGraphTab() {
     return (
       <div className="flex flex-col items-center">
         <Card className="px-4 py-2 rounded-lg shadow-md border border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
-          <div className="font-semibold">{roleName}</div>
+          <div className="font-semibold text-gray-800">{roleName}</div>
           <div className="flex flex-col items-start mt-1 space-y-1">
             {renderPrivileges(roleData.privileges)}
           </div>
@@ -98,26 +118,47 @@ export default function RBACGraphTab() {
         </Select>
         <div className="flex items-center space-x-2">
           <UserIcon className="w-5 h-5 text-gray-700" />
-          <span className="font-medium">{users.find((u) => u.id === selectedUser)?.name}</span>
+          <span className="font-medium text-gray-800">
+            {users.find((u) => u.id === selectedUser)?.name}
+          </span>
         </div>
       </div>
 
       {/* Graph */}
       <div className="flex justify-center">
         <div className="flex flex-col items-center">
-          {/* Roles */}
-          <div className="flex flex-col items-center">
-            {Object.entries(userGraph.roles).map(([roleName, roleData]) => renderRole(roleName, roleData))}
-          </div>
+          {/* User Node */}
+          <Card className="px-6 py-3 rounded-lg shadow-md border border-gray-300 bg-gradient-to-r from-purple-50 to-purple-100">
+            <div className="font-bold text-gray-800">
+              {users.find((u) => u.id === selectedUser)?.name}
+            </div>
+          </Card>
 
-          {/* Direct Grants */}
-          <div className="mt-8">
-            <Card className="px-4 py-2 rounded-lg shadow-md border border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
-              <div className="font-semibold">Direct Grants</div>
-              <div className="flex flex-col items-start mt-1 space-y-1">
-                {renderPrivileges(userGraph.directGrants)}
+          {/* Connector to Roles & Direct Grants */}
+          <div className="flex flex-col items-center">
+            <div className="h-6 w-px bg-gray-400"></div>
+            <div className="flex space-x-16">
+              {/* Roles Branch */}
+              <div className="flex flex-col items-center">
+                <Card className="px-4 py-2 rounded-lg shadow-md border border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+                  <div className="font-semibold text-gray-800">Roles</div>
+                </Card>
+                <div className="h-6 w-px bg-gray-400"></div>
+                {Object.entries(userGraph.roles).map(([roleName, roleData]) =>
+                  renderRole(roleName, roleData)
+                )}
               </div>
-            </Card>
+
+              {/* Direct Grants Branch */}
+              <div className="flex flex-col items-center">
+                <Card className="px-4 py-2 rounded-lg shadow-md border border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
+                  <div className="font-semibold text-gray-800">Direct Grants</div>
+                  <div className="flex flex-col items-start mt-1 space-y-1">
+                    {renderPrivileges(userGraph.directGrants)}
+                  </div>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
