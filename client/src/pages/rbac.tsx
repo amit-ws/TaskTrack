@@ -16,13 +16,15 @@ import {
 import { UserIcon } from "lucide-react";
 
 const users = [
-  { id: "User_1", name: "John Doe" },
-  { id: "User_2", name: "Jane Smith" },
+  { id: "API_USER", name: "API User" },
+  { id: "AMITP", name: "Amit P" },
+  { id: "DEV_USER", name: "Developer User" },
+  { id: "VMAMIDI", name: "V Mamidi" },
 ];
 
 const graphData: Record<string, any> = {
-  User_1: {
-    name: "User_1",
+  API_USER: {
+    name: "API_USER",
     type: "user",
     children: [
       {
@@ -33,16 +35,15 @@ const graphData: Record<string, any> = {
             name: "Role1",
             type: "role",
             privileges: {
-              SELECT: ["UserA", "UserB", "UserC", "UserD", "UserE"],
-              UPDATE: ["UserF"],
+              SELECT: ["TESTDB.PUBLIC.ORDERS", "TESTDB.PUBLIC.ORDER_ITEMS"],
+              UPDATE: ["TESTDB.PUBLIC.PRODUCTS"],
             },
             children: [
               {
                 name: "Role2",
                 type: "role",
                 privileges: {
-                  SELECT: ["UserG", "UserH", "UserI"],
-                  UPDATE: ["UserJ", "UserK"],
+                  INSERT: ["TESTDB.PUBLIC.CUSTOMERS"]
                 },
                 children: [],
               },
@@ -50,8 +51,8 @@ const graphData: Record<string, any> = {
                 name: "Role3",
                 type: "role",
                 privileges: {
-                  SELECT: ["UserL", "UserM"],
-                  UPDATE: ["UserN"],
+                  DELETE: ["DEMODB.PUBLIC.INVENTORY"],
+                  UPDATE: ["DEMODB.PUBLIC.SALES"],
                 },
                 children: [],
               },
@@ -63,8 +64,8 @@ const graphData: Record<string, any> = {
         name: "Direct Grants",
         type: "category",
         privileges: {
-          SELECT: ["UserO", "UserP"],
-          INSERT: ["UserQ", "UserR", "UserS"],
+          SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
+          INSERT: ["TESTDB.PUBLIC.USERS"],
         },
         children: [],
       },
@@ -73,7 +74,7 @@ const graphData: Record<string, any> = {
 };
 
 export default function RBACGraphTab() {
-  const [selectedUser, setSelectedUser] = useState<string>("User_1");
+  const [selectedUser, setSelectedUser] = useState<string>("API_USER");
 
   const renderPrivileges = (privileges: Record<string, string[]>) => {
     if (!privileges) return null;
@@ -158,7 +159,7 @@ export default function RBACGraphTab() {
       </div>
 
       {/* Graph */}
-      <div className="flex justify-center">{renderNode(userGraph)}</div>
+      <div className="flex justify-center">{userGraph && renderNode(userGraph)}</div>
     </div>
   );
 }
