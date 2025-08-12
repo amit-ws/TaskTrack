@@ -28,10 +28,10 @@ const graphData: Record<string, any> = {
     children: [
       {
         name: "Roles",
-        type: "category",
+        // type: "category",
         children: [
           {
-            name: "1",
+            name: "Role_1",
             type: "role",
             privileges: {
               SELECT: ["TESTDB.PUBLIC.ORDERS", "TESTDB.PUBLIC.ORDER_ITEMS"],
@@ -39,7 +39,7 @@ const graphData: Record<string, any> = {
             },
             children: [
               {
-                name: "2",
+                name: "Role_2",
                 type: "role",
                 privileges: {
                   INSERT: ["TESTDB.PUBLIC.CUSTOMERS"],
@@ -47,7 +47,7 @@ const graphData: Record<string, any> = {
                 children: [],
               },
               {
-                name: "3",
+                name: "Role_3",
                 type: "role",
                 privileges: {
                   DELETE: ["DEMODB.PUBLIC.INVENTORY"],
@@ -61,7 +61,7 @@ const graphData: Record<string, any> = {
       },
       {
         name: "Direct Grants",
-        type: "category",
+        // type: "category",
         privileges: {
           SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
           INSERT: ["TESTDB.PUBLIC.USERS"],
@@ -77,7 +77,7 @@ export default function RBACGraphTab() {
 
   const typeColors: Record<string, { card: string; badge: string; text: string }> = {
     user: { card: "border-blue-500 bg-[#0d1b2a]", badge: "bg-blue-900 text-blue-300", text: "text-blue-400" },
-    category: { card: "border-green-500 bg-[#0d2a1d]", badge: "bg-green-900 text-green-300", text: "text-green-400" },
+    // category: { card: "border-green-500 bg-[#0d2a1d]", badge: "bg-green-900 text-green-300", text: "text-green-400" },
     role: { card: "border-purple-500 bg-[#1a1425]", badge: "bg-purple-900 text-purple-300", text: "text-purple-400" },
   };
 
@@ -89,10 +89,10 @@ export default function RBACGraphTab() {
           <TooltipProvider key={priv}>
             <Tooltip>
               <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-300 font-semibold">
-                {priv} <span className="text-gray-500">({objs.length})</span>
+                {priv} <span className="text-white-500">({objs.length})</span>
               </TooltipTrigger>
               <TooltipContent>
-                <div className="text-sm space-y-1">
+                <div className="text-sm space-y-1">i
                   {objs.map((u, i) => (
                     <div key={i}>{u}</div>
                   ))}
