@@ -24,11 +24,11 @@ const users = [
 const graphData: Record<string, any> = {
   API_USER: {
     name: "API_USER",
-    // type: "user",
+    type: "user",
     children: [
       {
         name: "Roles",
-        // type: "category",
+        type: "category",
         children: [
           {
             name: "Role_1",
@@ -61,7 +61,7 @@ const graphData: Record<string, any> = {
       },
       {
         name: "Direct Grants",
-        // type: "category",
+        type: "category",
         privileges: {
           SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
           INSERT: ["TESTDB.PUBLIC.USERS"],
@@ -105,46 +105,38 @@ export default function RBACGraphTab() {
     );
   };
 
-  const renderNode = (node: any) => {
-    const colors = typeColors[node.type] || typeColors.role;
+const renderNode = (node: any) => {
+  const colors = typeColors[node.type] || typeColors.role;
 
-    return (
-      <div className="flex flex-col items-center">
-        <Card
-          className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}
-        >
-          {/* Removed icon */}
-          <div className="font-bold text-md uppercase text-center">{node.name}</div>
+  return (
+    <div className="flex flex-col items-center">
+      <Card
+        className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}
+      >
+        {/* Removed badge entirely */}
+        <div className="font-bold text-md uppercase text-center">{node.name}</div>
 
-          {/* Show badge only if not a 'role' */}
-          {node.type !== "role" && (
-            <div
-              className={`mt-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${colors.badge}`}
-            >
-              {node.type}
-            </div>
-          )}
+        {renderPrivileges(node.privileges)}
+      </Card>
 
-          {renderPrivileges(node.privileges)}
-        </Card>
-
-        {node.children && node.children.length > 0 && (
-          <div className="flex flex-col items-center">
-            {/* Vertical connector */}
-            <div className="h-8 w-px bg-gray-500"></div>
-            {/* Horizontal branch */}
-            <div className="flex space-x-6">
-              {node.children.map((child: any, idx: number) => (
-                <div key={idx} className="flex flex-col items-center">
-                  {renderNode(child)}
-                </div>
-              ))}
-            </div>
+      {node.children && node.children.length > 0 && (
+        <div className="flex flex-col items-center">
+          {/* Vertical connector */}
+          <div className="h-8 w-px bg-gray-500"></div>
+          {/* Horizontal branch */}
+          <div className="flex space-x-6">
+            {node.children.map((child: any, idx: number) => (
+              <div key={idx} className="flex flex-col items-center">
+                {renderNode(child)}
+              </div>
+            ))}
           </div>
-        )}
-      </div>
-    );
-  };
+        </div>
+      )}
+    </div>
+  );
+};
+
 
   const userGraph = graphData[selectedUser];
 
