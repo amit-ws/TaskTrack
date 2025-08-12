@@ -44,10 +44,21 @@ const graphData: Record<string, any> = {
                 privileges: {
                   INSERT: ["TESTDB.PUBLIC.CUSTOMERS"],
                 },
-                children: [],
+                children: [
+                  {
+                    name: "Role_3",
+                    type: "role",
+                    privileges: {
+                      SELECT: ["TESTDB.PUBLIC.REVIEWS"],
+                      UPDATE: ["TESTDB.PUBLIC.USERS"],
+                      DELETE: ["TESTDB.PUBLIC.SESSIONS"],
+                    },
+                    children: [],
+                  },
+                ],
               },
               {
-                name: "Role_3",
+                name: "Role_4",
                 type: "role",
                 privileges: {
                   DELETE: ["DEMODB.PUBLIC.INVENTORY"],
@@ -59,25 +70,25 @@ const graphData: Record<string, any> = {
           },
         ],
       },
- {
-  name: "Direct Grants",
-  type: "category",
-  children: [
-    {
-      name: "Direct Grants Privileges",
-      type: "role",
-      privileges: {
-        SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
-        INSERT: ["TESTDB.PUBLIC.USERS"],
-        DELETE: ["TESTDB.PUBLIC.ADDRESSES"],
+      {
+        name: "Direct Grants",
+        type: "category",
+        children: [
+          {
+            name: "Direct Grants Privileges",
+            type: "role",
+            privileges: {
+              SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
+              INSERT: ["TESTDB.PUBLIC.USERS"],
+              DELETE: ["TESTDB.PUBLIC.ADDRESSES"],
+            },
+          },
+        ],
       },
-    },
-  ],
-}
-
     ],
   },
 };
+
 
 export default function RBACGraphTab() {
   const [selectedUser, setSelectedUser] = useState<string>("API_USER");
@@ -99,7 +110,7 @@ export default function RBACGraphTab() {
                 {priv} <span className="text-white-500">({objs.length})</span>
               </TooltipTrigger>
               <TooltipContent>
-                <div className="text-sm space-y-1">i
+                <div className="text-sm space-y-1">
                   {objs.map((u, i) => (
                     <div key={i}>{u}</div>
                   ))}
