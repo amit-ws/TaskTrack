@@ -20,97 +20,108 @@ const users = [
   { id: "User_2", name: "Jane Smith" },
 ];
 
-// UserGraph.tsx
-
-const graphData = {
-  name: "User_1",
-  type: "user",
-  children: [
-    {
-      name: "Roles",
-      type: "category",
-      children: [
-        {
-          name: "Role1",
-          type: "role",
-          privileges: [
-            { name: "SELECT", count: 5 },
-            { name: "UPDATE", count: 1 },
-          ],
-          children: [
-            {
-              name: "Role2",
-              type: "role",
-              privileges: [
-                { name: "SELECT", count: 3 },
-                { name: "UPDATE", count: 2 },
-              ],
-              children: [],
+const graphData: Record<string, any> = {
+  User_1: {
+    name: "User_1",
+    type: "user",
+    children: [
+      {
+        name: "Roles",
+        type: "category",
+        children: [
+          {
+            name: "Role1",
+            type: "role",
+            privileges: {
+              SELECT: ["UserA", "UserB", "UserC", "UserD", "UserE"],
+              UPDATE: ["UserF"],
             },
-            {
-              name: "Role3", // Now direct under Role1
-              type: "role",
-              privileges: [
-                { name: "SELECT", count: 2 },
-                { name: "UPDATE", count: 1 },
-              ],
-              children: [],
-            },
-          ],
+            children: [
+              {
+                name: "Role2",
+                type: "role",
+                privileges: {
+                  SELECT: ["UserG", "UserH", "UserI"],
+                  UPDATE: ["UserJ", "UserK"],
+                },
+                children: [],
+              },
+              {
+                name: "Role3",
+                type: "role",
+                privileges: {
+                  SELECT: ["UserL", "UserM"],
+                  UPDATE: ["UserN"],
+                },
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Direct Grants",
+        type: "category",
+        privileges: {
+          SELECT: ["UserO", "UserP"],
+          INSERT: ["UserQ", "UserR", "UserS"],
         },
-      ],
-    },
-    {
-      name: "Direct Grants",
-      type: "category",
-      privileges: [
-        { name: "SELECT", count: 2 },
-        { name: "INSERT", count: 3 },
-      ],
-      children: [],
-    },
-  ],
+        children: [],
+      },
+    ],
+  },
 };
-
 
 export default function RBACGraphTab() {
   const [selectedUser, setSelectedUser] = useState<string>("User_1");
 
   const renderPrivileges = (privileges: Record<string, string[]>) => {
-    return Object.entries(privileges).map(([priv, users]) => (
-      <TooltipProvider key={priv}>
-        <Tooltip>
-          <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-800">
-            {priv} <span className="text-gray-500">({users.length})</span>
-          </TooltipTrigger>
-          <TooltipContent>
-            <div className="text-sm space-y-1">
-              {users.map((u, i) => (
-                <div key={i}>{u}</div>
-              ))}
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    ));
+    if (!privileges) return null;
+    return (
+      <div className="flex flex-col items-start mt-1 space-y-1">
+        {Object.entries(privileges).map(([priv, users]) => (
+          <TooltipProvider key={priv}>
+            <Tooltip>
+              <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-800">
+                {priv} <span className="text-gray-500">({users.length})</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="text-sm space-y-1">
+                  {users.map((u, i) => (
+                    <div key={i}>{u}</div>
+                  ))}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ))}
+      </div>
+    );
   };
 
-  const renderRole = (roleName: string, roleData: any) => {
+  const renderNode = (node: any) => {
     return (
       <div className="flex flex-col items-center">
-        <Card className="px-4 py-2 rounded-lg shadow-md border border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
-          <div className="font-semibold text-gray-800">{roleName}</div>
-          <div className="flex flex-col items-start mt-1 space-y-1">
-            {renderPrivileges(roleData.privileges)}
-          </div>
+        <Card
+          className={`px-4 py-2 rounded-lg shadow-md border border-gray-200 ${
+            node.type === "user"
+              ? "bg-gradient-to-r from-purple-50 to-purple-100"
+              : node.type === "category"
+              ? "bg-gradient-to-r from-indigo-50 to-indigo-100"
+              : "bg-gradient-to-r from-blue-50 to-blue-100"
+          }`}
+        >
+          <div className="font-semibold text-gray-800">{node.name}</div>
+          {renderPrivileges(node.privileges)}
         </Card>
-        {Object.keys(roleData.children).length > 0 && (
+
+        {node.children && node.children.length > 0 && (
           <div className="flex flex-col items-center mt-4">
             <div className="h-6 w-px bg-gray-400"></div>
             <div className="flex space-x-8">
-              {Object.entries(roleData.children).map(([childName, childData]) => (
-                <div key={childName} className="flex flex-col items-center">
-                  {renderRole(childName, childData)}
+              {node.children.map((child: any, idx: number) => (
+                <div key={idx} className="flex flex-col items-center">
+                  {renderNode(child)}
                 </div>
               ))}
             </div>
@@ -147,43 +158,7 @@ export default function RBACGraphTab() {
       </div>
 
       {/* Graph */}
-      <div className="flex justify-center">
-        <div className="flex flex-col items-center">
-          {/* User Node */}
-          <Card className="px-6 py-3 rounded-lg shadow-md border border-gray-300 bg-gradient-to-r from-purple-50 to-purple-100">
-            <div className="font-bold text-gray-800">
-              {users.find((u) => u.id === selectedUser)?.name}
-            </div>
-          </Card>
-
-          {/* Connector to Roles & Direct Grants */}
-          <div className="flex flex-col items-center">
-            <div className="h-6 w-px bg-gray-400"></div>
-            <div className="flex space-x-16">
-              {/* Roles Branch */}
-              <div className="flex flex-col items-center">
-                <Card className="px-4 py-2 rounded-lg shadow-md border border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
-                  <div className="font-semibold text-gray-800">Roles</div>
-                </Card>
-                <div className="h-6 w-px bg-gray-400"></div>
-                {Object.entries(userGraph.roles).map(([roleName, roleData]) =>
-                  renderRole(roleName, roleData)
-                )}
-              </div>
-
-              {/* Direct Grants Branch */}
-              <div className="flex flex-col items-center">
-                <Card className="px-4 py-2 rounded-lg shadow-md border border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
-                  <div className="font-semibold text-gray-800">Direct Grants</div>
-                  <div className="flex flex-col items-start mt-1 space-y-1">
-                    {renderPrivileges(userGraph.directGrants)}
-                  </div>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div className="flex justify-center">{renderNode(userGraph)}</div>
     </div>
   );
 }
