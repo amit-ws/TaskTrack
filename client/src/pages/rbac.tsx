@@ -20,36 +20,58 @@ const users = [
   { id: "User_2", name: "Jane Smith" },
 ];
 
+// UserGraph.tsx
+
 const graphData = {
-  User_1: {
-    roles: {
-      Role1: {
-        privileges: {
-          SELECT: ["UserA", "UserB", "UserC", "UserD", "UserE"],
-          UPDATE: ["UserF"],
-        },
-        children: {
-          Role2: {
-            privileges: {
-              SELECT: ["UserG", "UserH", "UserI"],
-              UPDATE: ["UserJ", "UserK"],
+  name: "User_1",
+  type: "user",
+  children: [
+    {
+      name: "Roles",
+      type: "category",
+      children: [
+        {
+          name: "Role1",
+          type: "role",
+          privileges: [
+            { name: "SELECT", count: 5 },
+            { name: "UPDATE", count: 1 },
+          ],
+          children: [
+            {
+              name: "Role2",
+              type: "role",
+              privileges: [
+                { name: "SELECT", count: 3 },
+                { name: "UPDATE", count: 2 },
+              ],
+              children: [],
             },
-            children: {
-              Role3: {
-                privileges: { SELECT: ["UserL", "UserM"], UPDATE: ["UserN"] },
-                children: {},
-              },
+            {
+              name: "Role3", // Now direct under Role1
+              type: "role",
+              privileges: [
+                { name: "SELECT", count: 2 },
+                { name: "UPDATE", count: 1 },
+              ],
+              children: [],
             },
-          },
+          ],
         },
-      },
+      ],
     },
-    directGrants: {
-      SELECT: ["UserO", "UserP"],
-      INSERT: ["UserQ", "UserR", "UserS"],
+    {
+      name: "Direct Grants",
+      type: "category",
+      privileges: [
+        { name: "SELECT", count: 2 },
+        { name: "INSERT", count: 3 },
+      ],
+      children: [],
     },
-  },
+  ],
 };
+
 
 export default function RBACGraphTab() {
   const [selectedUser, setSelectedUser] = useState<string>("User_1");
