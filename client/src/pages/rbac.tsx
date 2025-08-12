@@ -59,15 +59,22 @@ const graphData: Record<string, any> = {
           },
         ],
       },
-      {
-        name: "Direct Grants",
-        type: "category",
-        privileges: {
-          SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
-          INSERT: ["TESTDB.PUBLIC.USERS"],
-        },
-        children: [],
+ {
+  name: "Direct Grants",
+  type: "category",
+  children: [
+    {
+      name: "Direct Grants Privileges",
+      type: "role",
+      privileges: {
+        SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
+        INSERT: ["TESTDB.PUBLIC.USERS"],
+        DELETE: ["TESTDB.PUBLIC.ADDRESSES"],
       },
+    },
+  ],
+}
+
     ],
   },
 };
@@ -113,17 +120,17 @@ const renderNode = (node: any) => {
       <Card
         className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}
       >
-        {/* Removed badge entirely */}
-        <div className="font-bold text-md uppercase text-center">{node.name}</div>
+        {/* Hide node name for Direct Grants Privileges */}
+        <div className="font-bold text-md uppercase text-center">
+          {node.name === "Direct Grants Privileges" ? null : node.name}
+        </div>
 
         {renderPrivileges(node.privileges)}
       </Card>
 
       {node.children && node.children.length > 0 && (
         <div className="flex flex-col items-center">
-          {/* Vertical connector */}
           <div className="h-8 w-px bg-gray-500"></div>
-          {/* Horizontal branch */}
           <div className="flex space-x-6">
             {node.children.map((child: any, idx: number) => (
               <div key={idx} className="flex flex-col items-center">
@@ -136,6 +143,7 @@ const renderNode = (node: any) => {
     </div>
   );
 };
+a
 
 
   const userGraph = graphData[selectedUser];
