@@ -13,7 +13,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Database } from "lucide-react";
 
 const users = [
   { id: "API_USER", name: "API User" },
@@ -32,7 +31,7 @@ const graphData: Record<string, any> = {
         type: "category",
         children: [
           {
-            name: "Role1",
+            name: "1",
             type: "role",
             privileges: {
               SELECT: ["TESTDB.PUBLIC.ORDERS", "TESTDB.PUBLIC.ORDER_ITEMS"],
@@ -40,7 +39,7 @@ const graphData: Record<string, any> = {
             },
             children: [
               {
-                name: "Role2",
+                name: "2",
                 type: "role",
                 privileges: {
                   INSERT: ["TESTDB.PUBLIC.CUSTOMERS"],
@@ -48,7 +47,7 @@ const graphData: Record<string, any> = {
                 children: [],
               },
               {
-                name: "Role3",
+                name: "3",
                 type: "role",
                 privileges: {
                   DELETE: ["DEMODB.PUBLIC.INVENTORY"],
@@ -89,7 +88,7 @@ export default function RBACGraphTab() {
         {Object.entries(privileges).map(([priv, objs]) => (
           <TooltipProvider key={priv}>
             <Tooltip>
-              <TooltipTrigger className="text-xs cursor-pointer hover:underline text-gray-300">
+              <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-300 font-semibold">
                 {priv} <span className="text-gray-500">({objs.length})</span>
               </TooltipTrigger>
               <TooltipContent>
@@ -112,15 +111,20 @@ export default function RBACGraphTab() {
     return (
       <div className="flex flex-col items-center">
         <Card
-          className={`px-6 py-4 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[180px] flex flex-col items-center`}
+          className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}
         >
-          <Database className="w-8 h-8 mb-2" />
-          <div className="font-bold text-lg uppercase text-center">{node.name}</div>
-          <div
-            className={`mt-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${colors.badge}`}
-          >
-            {node.type}
-          </div>
+          {/* Removed icon */}
+          <div className="font-bold text-md uppercase text-center">{node.name}</div>
+
+          {/* Show badge only if not a 'role' */}
+          {node.type !== "role" && (
+            <div
+              className={`mt-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${colors.badge}`}
+            >
+              {node.type}
+            </div>
+          )}
+
           {renderPrivileges(node.privileges)}
         </Card>
 
@@ -129,7 +133,7 @@ export default function RBACGraphTab() {
             {/* Vertical connector */}
             <div className="h-8 w-px bg-gray-500"></div>
             {/* Horizontal branch */}
-            <div className="flex space-x-8">
+            <div className="flex space-x-6">
               {node.children.map((child: any, idx: number) => (
                 <div key={idx} className="flex flex-col items-center">
                   {renderNode(child)}
