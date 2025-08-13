@@ -32,40 +32,36 @@ const graphData: Record<string, any> = {
           {
             name: "Role1",
             type: "role",
+            users_count: 5,
+            users_list: ["user1", "user2", "user3", "user4", "user5"],
             privileges: [
               {
                 name: "SELECT",
                 count: 2,
                 objects: ["TESTDB.PUBLIC.ORDERS", "TESTDB.PUBLIC.ORDER_ITEMS"],
-                users_count: 5,
-                users_list: ["user1", "user2", "user3", "user4", "user5"],
               },
               {
                 name: "UPDATE",
                 count: 1,
                 objects: ["TESTDB.PUBLIC.ORDERS"],
-                users_count: 3,
-                users_list: ["user1", "user2", "user3"],
               },
             ],
             children: [
               {
                 name: "Role2",
                 type: "role",
+                users_count: 2,
+                users_list: ["user2", "user3"],
                 privileges: [
                   {
                     name: "SELECT",
                     count: 2,
                     objects: ["TESTDB.PUBLIC.CUSTOMERS", "TESTDB.PUBLIC.INVOICES"],
-                    users_count: 1,
-                    users_list: ["user1"],
                   },
                   {
                     name: "UPDATE",
                     count: 1,
                     objects: ["TESTDB.PUBLIC.INVOICES"],
-                    users_count: 2,
-                    users_list: ["user2", "user3"],
                   },
                 ],
                 children: [],
@@ -73,20 +69,18 @@ const graphData: Record<string, any> = {
               {
                 name: "Role3",
                 type: "role",
+                users_count: 4,
+                users_list: ["user1", "user2", "user3", "user4"],
                 privileges: [
                   {
                     name: "SELECT",
                     count: 2,
                     objects: ["TESTDB.PUBLIC.PRODUCTS", "TESTDB.PUBLIC.CATEGORIES"],
-                    users_count: 4,
-                    users_list: ["user1", "user2", "user3", "user4"],
                   },
                   {
                     name: "UPDATE",
                     count: 1,
                     objects: ["TESTDB.PUBLIC.PRODUCTS"],
-                    users_count: 2,
-                    users_list: ["user2", "user3"],
                   },
                 ],
                 children: [],
@@ -96,28 +90,25 @@ const graphData: Record<string, any> = {
         ],
       },
       {
-        name: "Direct Grants",
+        name: "Self",
         type: "category",
+        users_count: 3,
+        users_list: ["user1", "user2", "user3"],
         privileges: [
           {
             name: "SELECT",
             count: 2,
             objects: ["TESTDB.PUBLIC.REVIEWS", "TESTDB.PUBLIC.USERS"],
-            users_count: 3,
-            users_list: ["user1", "user2", "user3"],
           },
           {
             name: "INSERT",
             count: 1,
             objects: ["TESTDB.PUBLIC.ORDERS"],
-            users_count: 2,
-            users_list: ["user1", "user2"],
           },
         ],
       },
     ],
   },
-  // Add other users similarly
 };
 
 export default function RBACGraphTab() {
@@ -129,26 +120,22 @@ export default function RBACGraphTab() {
     role: { card: "border-purple-500 bg-[#1a1425]", badge: "bg-purple-900 text-purple-300", text: "text-purple-400" },
   };
 
+  // Render privilege list with name, count, and objects
   const renderPrivileges = (privileges: any[]) => {
     if (!privileges || privileges.length === 0) return null;
 
     return (
-      <div className="flex flex-col items-center mt-2 space-y-1">
+      <div className="flex flex-col items-center mt-2 space-y-1 max-w-xs">
         {privileges.map((priv) => (
           <TooltipProvider key={priv.name}>
             <Tooltip>
               <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-300 font-semibold">
-                {priv.name} <span className="text-white-500">({priv.count})</span> - Users: {priv.users_count}
+                {priv.name} <span className="text-white-500">({priv.count})</span>
               </TooltipTrigger>
               <TooltipContent>
-                <div className="text-sm space-y-1 max-w-xs">
-                  <div><strong>Objects:</strong></div>
+                <div className="text-sm space-y-1">
                   {priv.objects.map((obj: string, i: number) => (
                     <div key={i}>{obj}</div>
-                  ))}
-                  <div className="mt-1"><strong>Users:</strong></div>
-                  {priv.users_list.map((u: string, i: number) => (
-                    <div key={i}>{u}</div>
                   ))}
                 </div>
               </TooltipContent>
@@ -156,6 +143,29 @@ export default function RBACGraphTab() {
           </TooltipProvider>
         ))}
       </div>
+    );
+  };
+
+  // Render users_count and users_list as a badge with tooltip
+  const renderUsers = (users_count: number | undefined, users_list: string[] | undefined) => {
+    if (!users_count || !users_list || users_count === 0) return null;
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <div className="mt-1 px-2 py-0.5 rounded-full bg-yellow-700 text-yellow-200 text-xs font-semibold cursor-pointer select-none">
+              Users: {users_count}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <div className="text-sm space-y-0.5">
+              {users_list.map((u, i) => (
+                <div key={i}>{u}</div>
+              ))}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   };
 
@@ -167,15 +177,14 @@ export default function RBACGraphTab() {
         <Card
           className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}
         >
-          {/* Hide name for Direct Grants (optional) */}
-          <div className="font-bold text-md uppercase text-center">
-            {node.name === "Direct Grants" ? null : node.name}
-          </div>
+          {/* Hide name for Self node if you want or show it */}
+          <div className="font-bold text-md uppercase text-center">{node.name}</div>
+
+          {/* Users badge at role/category level */}
+          {renderUsers(node.users_count, node.users_list)}
 
           {renderPrivileges(node.privileges)}
 
-          {/* If "Direct Grants" has no children but has privileges */}
-          {!node.children && node.privileges && renderPrivileges(node.privileges)}
         </Card>
 
         {node.children && node.children.length > 0 && (
