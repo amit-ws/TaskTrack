@@ -290,7 +290,7 @@ export default function RBAC() {
             idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
           )}
         >
-<td className="px-6 py-3 text-green-800 font-medium">
+<td className="px-6 py-3 text-green-500 font-medium">
   {user.user_name}
 </td>
 
