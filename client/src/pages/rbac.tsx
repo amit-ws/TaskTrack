@@ -126,23 +126,6 @@ function getBytesConsumedColor(bytes: number) {
   return "bg-red-300 text-black";
 }
 
-// Generate a consistent color badge for user_name based on hashing or simple color map
-const userColors = [
-  "bg-blue-600 text-white",
-  "bg-green-600 text-white",
-  "bg-purple-600 text-white",
-  "bg-yellow-600 text-black",
-  "bg-pink-600 text-white",
-];
-function getUserColor(userName: string) {
-  // simple hash to pick color
-  let hash = 0;
-  for (let i = 0; i < userName.length; i++) {
-    hash = userName.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % userColors.length;
-  return userColors[index];
-}
 
 export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
