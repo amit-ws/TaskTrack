@@ -89,25 +89,26 @@ const graphData: Record<string, any> = {
           },
         ],
       },
-      {
-        name: "Self",
-        type: "category",
-        users_count: 3,
-        users_list: ["user1", "user2", "user3"],
-        privileges: [
-          {
-            name: "SELECT",
-            count: 2,
-            objects: ["TESTDB.PUBLIC.REVIEWS", "TESTDB.PUBLIC.USERS"],
-          },
-          {
-            name: "INSERT",
-            count: 1,
-            objects: ["TESTDB.PUBLIC.ORDERS"],
-          },
-        ],
-      },
+      // Remove "Self" from children, make it standalone below
     ],
+    self: {
+      name: "Self",
+      type: "role",  // treat Self as a role for purple card
+      users_count: 3,
+      users_list: ["user1", "user2", "user3"],
+      privileges: [
+        {
+          name: "SELECT",
+          count: 2,
+          objects: ["TESTDB.PUBLIC.REVIEWS", "TESTDB.PUBLIC.USERS"],
+        },
+        {
+          name: "INSERT",
+          count: 1,
+          objects: ["TESTDB.PUBLIC.ORDERS"],
+        },
+      ],
+    },
   },
 };
 
@@ -120,7 +121,6 @@ export default function RBACGraphTab() {
     role: { card: "border-purple-500 bg-[#1a1425]", badge: "bg-purple-900 text-purple-300", text: "text-purple-400" },
   };
 
-  // Render privilege list with name, count, and objects
   const renderPrivileges = (privileges: any[]) => {
     if (!privileges || privileges.length === 0) return null;
 
@@ -146,14 +146,13 @@ export default function RBACGraphTab() {
     );
   };
 
-  // Render users_count and users_list as a badge with tooltip
   const renderUsers = (users_count: number | undefined, users_list: string[] | undefined) => {
     if (!users_count || !users_list || users_count === 0) return null;
     return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <div className="mt-1 px-2 py-0.5 rounded-full bg-yellow-700 text-yellow-200 text-xs font-semibold cursor-pointer select-none">
+            <div className="mt-3 px-2 py-0.5 rounded-full bg-yellow-700 text-yellow-200 text-xs font-semibold cursor-pointer select-none">
               Users: {users_count}
             </div>
           </TooltipTrigger>
@@ -177,14 +176,11 @@ export default function RBACGraphTab() {
         <Card
           className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}
         >
-          {/* Hide name for Self node if you want or show it */}
           <div className="font-bold text-md uppercase text-center">{node.name}</div>
-
-          {/* Users badge at role/category level */}
-          {renderUsers(node.users_count, node.users_list)}
 
           {renderPrivileges(node.privileges)}
 
+          {renderUsers(node.users_count, node.users_list)}
         </Card>
 
         {node.children && node.children.length > 0 && (
@@ -223,8 +219,15 @@ export default function RBACGraphTab() {
         </Select>
       </div>
 
-      {/* Graph */}
-      <div className="flex justify-center">{userGraph && renderNode(userGraph)}</div>
+      {/* Graph: Inherits and Self side-by-side */}
+      <div className="flex justify-center space-x-8">
+        {userGraph.children && userGraph.children.map((child: any, idx: number) => (
+          <div key={idx}>{renderNode(child)}</div>
+        ))}
+
+        {/* Render Self box as sibling */}
+        {userGraph.self && renderNode(userGraph.self)}
+      </div>
     </div>
   );
 }
