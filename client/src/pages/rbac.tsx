@@ -73,7 +73,7 @@ const roleAuditTrail = [
     event_date: "2025-08-08T16:15:00Z",
     action: "REVOKE",
     description: "Role revoked from user",
-    performed_by_user: "API_PIPELINE_BOT",
+    performed_by_user: "SB_INTEGRATION",
     performed_by_role: "SECURITY_ADMIN",
     user_type: "PROGRAMMATIC_TOKEN",
     details: "Role 'Role1' revoked from user 'AMITP'.",
