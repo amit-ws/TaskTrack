@@ -290,16 +290,12 @@ export default function RBAC() {
             idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
           )}
         >
-  <td className="px-6 py-3">
-  <Badge
-    className="text-xs font-medium text-emerald-900"
-    style={{
-      background: "linear-gradient(to right, #d1fae5, #a7f3d0)",
-    }}
-  >
+<td className="px-6 py-3">
+  <Badge className="bg-green-100 text-green-800 font-medium text-xs px-2 py-1 rounded">
     {user.user_name}
   </Badge>
 </td>
+
           <td className="px-6 py-3">{user.grant_type}</td>
           <td className="px-6 py-3">{user.grant_via || "-"}</td>
           <td className="px-6 py-3">{user.total_queries}</td>
