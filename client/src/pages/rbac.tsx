@@ -291,9 +291,10 @@ export default function RBAC() {
           )}
         >
 <td className="px-6 py-3">
-  <Badge className="bg-green-100 text-green-800 font-medium text-xs px-2 py-1 rounded">
-    {user.user_name}
-  </Badge>
+<Badge className="bg-green-100 text-green-900 font-medium text-xs px-2 py-1 rounded">
+  {user.user_name}
+</Badge>
+
 </td>
 
           <td className="px-6 py-3">{user.grant_type}</td>
