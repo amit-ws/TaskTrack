@@ -183,7 +183,7 @@ const roleGraphData: Record<string, any> = {
     type: "user",
     children: [
       {
-        name: "Roles",
+        name: "Inherits",
         type: "category",
         children: [
           {
@@ -323,7 +323,9 @@ export default function RBAC() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <div className="mt-2 text-sm cursor-pointer underline text-purple-900 bg-yellow-400 px-2 rounded select-none">
+                  {/* <div className="mt-2 text-sm cursor-pointer underline text-purple-900 bg-yellow-400 px-2 rounded select-none"> */}
+                  <div className="mt-2 text-sm cursor-pointer underline text-purple-900 px-2 rounded select-none" style={{ backgroundColor: 'gold' }}>
+
                     Users ({node.users_count})
                   </div>
                 </TooltipTrigger>
