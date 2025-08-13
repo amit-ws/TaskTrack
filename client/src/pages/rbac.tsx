@@ -14,46 +14,38 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-type RoleNode = {
+type Role = {
   name: string;
-  self: {
-    privileges: Record<string, string[]>;
-    users: string[];
-  };
-  inherits: RoleNode[];
+  privileges: Record<string, string[]>;
+  users: string[];
+  inherits: Role[];
 };
 
-// Sample data
-const rolesData: Record<string, RoleNode> = {
+// Sample data matching your structure
+const rolesData: Record<string, Role> = {
   ROLE_1: {
     name: "ROLE_1",
-    self: {
-      privileges: {
-        SELECT: ["obj1", "obj2"],
-        INSERT: ["objA"],
-      },
-      users: ["user1", "user2", "user3", "user4", "user5"],
+    privileges: {
+      SELECT: ["obj1", "obj2"],
+      INSERT: ["objA"],
     },
+    users: ["user1", "user2", "user3", "user4", "user5"],
     inherits: [
       {
         name: "ROLE_2",
-        self: {
-          privileges: {
-            SELECT: ["obj1", "obj2", "obj3"],
-            INSERT: ["objA", "objB"],
-          },
-          users: ["user6", "user7", "user8"],
+        privileges: {
+          SELECT: ["obj1", "obj2", "obj3"],
+          INSERT: ["objA", "objB"],
         },
+        users: ["user6", "user7", "user8"],
         inherits: [
           {
             name: "ROLE_3",
-            self: {
-              privileges: {
-                SELECT: ["obj1", "obj2"],
-                INSERT: ["objA"],
-              },
-              users: ["user9"],
+            privileges: {
+              SELECT: ["obj1", "obj2"],
+              INSERT: ["objA"],
             },
+            users: ["user9"],
             inherits: [],
           },
         ],
@@ -62,17 +54,13 @@ const rolesData: Record<string, RoleNode> = {
   },
   ROLE_4: {
     name: "ROLE_4",
-    self: {
-      privileges: {
-        DELETE: ["objX", "objY"],
-      },
-      users: ["user10", "user11"],
+    privileges: {
+      DELETE: ["objX", "objY"],
     },
+    users: ["user10", "user11"],
     inherits: [],
   },
 };
-
-const usersList = Object.values(rolesData).flatMap(r => r.self.users);
 
 const typeColors = {
   category: { card: "border-green-500 bg-[#0d2a1d]", text: "text-green-400" },
@@ -87,7 +75,9 @@ function PrivilegesBox({
   users: string[];
 }) {
   return (
-    <Card className={`px-4 py-3 rounded-xl shadow-lg border-2 ${typeColors.role.card} ${typeColors.role.text} min-w-[200px] flex flex-col items-center`}>
+    <Card
+      className={`px-4 py-3 rounded-xl shadow-lg border-2 ${typeColors.role.card} ${typeColors.role.text} min-w-[200px] flex flex-col items-center`}
+    >
       <div className="flex flex-wrap justify-center gap-3">
         {Object.entries(privileges).map(([priv, objs]) => (
           <TooltipProvider key={priv}>
@@ -106,7 +96,6 @@ function PrivilegesBox({
           </TooltipProvider>
         ))}
 
-        {/* Users count */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger className="cursor-pointer font-semibold uppercase text-sm hover:underline">
@@ -126,7 +115,32 @@ function PrivilegesBox({
   );
 }
 
-function RoleNodeComponent({ node }: { node: RoleNode }) {
+/** Render nested roles ONLY for levels > 1, no self/inherits split */
+function NestedRoleNode({ node }: { node: Role }) {
+  return (
+    <div className="flex flex-col items-center space-y-6">
+      <PrivilegesBox privileges={node.privileges} users={node.users} />
+
+      {node.inherits.length > 0 && (
+        <>
+          {/* Vertical connector */}
+          <div className="h-8 w-px bg-gray-500"></div>
+
+          {/* Children rendered horizontally */}
+          <div className="flex space-x-8">
+            {node.inherits.map((child) => (
+              <div key={child.name} className="flex flex-col items-center">
+                <NestedRoleNode node={child} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function TopLevelRole({ node }: { node: Role }) {
   return (
     <div className="flex flex-col items-center space-y-6">
       {/* Role Name */}
@@ -135,20 +149,28 @@ function RoleNodeComponent({ node }: { node: RoleNode }) {
       {/* Categories container */}
       <div className="flex space-x-12">
         {/* Self category */}
-        <div className={`flex flex-col items-center border-2 rounded-xl p-4 ${typeColors.category.card} min-w-[220px]`}>
-          <div className={`mb-4 font-semibold uppercase ${typeColors.category.text}`}>Self</div>
-          <PrivilegesBox privileges={node.self.privileges} users={node.self.users} />
+        <div
+          className={`flex flex-col items-center border-2 rounded-xl p-4 ${typeColors.category.card} min-w-[220px]`}
+        >
+          <div className={`mb-4 font-semibold uppercase ${typeColors.category.text}`}>
+            Self
+          </div>
+          <PrivilegesBox privileges={node.privileges} users={node.users} />
         </div>
 
         {/* Inherits category */}
-        <div className={`flex flex-col items-center border-2 rounded-xl p-4 ${typeColors.category.card} min-w-[220px]`}>
-          <div className={`mb-4 font-semibold uppercase ${typeColors.category.text}`}>Inherits</div>
+        <div
+          className={`flex flex-col items-center border-2 rounded-xl p-4 ${typeColors.category.card} min-w-[220px]`}
+        >
+          <div className={`mb-4 font-semibold uppercase ${typeColors.category.text}`}>
+            Inherits
+          </div>
           {node.inherits.length === 0 ? (
             <div className="text-gray-400 italic text-sm">No inherited roles</div>
           ) : (
             <div className="flex flex-col space-y-6">
-              {node.inherits.map((childRole) => (
-                <RoleNodeComponent key={childRole.name} node={childRole} />
+              {node.inherits.map((child) => (
+                <NestedRoleNode key={child.name} node={child} />
               ))}
             </div>
           )}
@@ -182,7 +204,7 @@ export default function RBACGraphTab() {
       {/* Render Role Hierarchy */}
       {rolesData[selectedRole] ? (
         <div className="flex justify-center">
-          <RoleNodeComponent node={rolesData[selectedRole]} />
+          <TopLevelRole node={rolesData[selectedRole]} />
         </div>
       ) : (
         <div className="text-gray-400">No role selected</div>
