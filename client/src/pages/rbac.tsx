@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+
 import {
   Tabs,
   TabsList,
@@ -288,16 +290,16 @@ export default function RBAC() {
             idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
           )}
         >
-          <td className="px-6 py-3">
-            <span
-              className="inline-block px-2 py-1 rounded text-xs font-semibold text-emerald-900"
-              style={{
-                background: "linear-gradient(to right, #d1fae5, #a7f3d0)",
-              }}
-            >
-              {user.user_name}
-            </span>
-          </td>
+  <td className="px-6 py-3">
+  <Badge
+    className="text-xs font-medium text-emerald-900"
+    style={{
+      background: "linear-gradient(to right, #d1fae5, #a7f3d0)",
+    }}
+  >
+    {user.user_name}
+  </Badge>
+</td>
           <td className="px-6 py-3">{user.grant_type}</td>
           <td className="px-6 py-3">{user.grant_via || "-"}</td>
           <td className="px-6 py-3">{user.total_queries}</td>
