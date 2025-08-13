@@ -21,7 +21,7 @@ const users = [
 ];
 
 const graphData: Record<string, any> = {
-  API_USER: {
+  ROLE_1: {
     name: "ROLE_1",
     type: "user",
     children: [
@@ -78,7 +78,7 @@ const graphData: Record<string, any> = {
         ],
       },
       {
-        name: "Direct Grants",
+        name: "Self",
         type: "category",
         children: [
           {
