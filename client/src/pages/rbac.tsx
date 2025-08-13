@@ -85,6 +85,8 @@ const graphData: Record<string, any> = {
           {
             name: "Direct Grants Privileges",
             type: "role",
+                  "users_count": 3,
+            "users_list": ["user1", "user2", "user3"],
             privileges: {
               SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
               INSERT: ["TESTDB.PUBLIC.USERS"],
@@ -93,7 +95,6 @@ const graphData: Record<string, any> = {
           },
         ],
       },
-      // The Self Grants Privileges node is intentionally excluded from rendering
     ],
   },
 };
@@ -164,27 +165,30 @@ export default function RBACGraphTab() {
           {renderPrivileges(node.privileges)}
 
           {/* Show users count + tooltip if this is a role with users_count */}
-          {node.type === "role" && node.users_count !== undefined && node.users_list && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <div
-                    className="mt-2 text-sm cursor-pointer underline text-purple-300"
-                    style={{ userSelect: "none" }}
-                  >
-                    Users ({node.users_count})
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="text-sm space-y-1 max-w-xs">
-                    {node.users_list.map((user: string, idx: number) => (
-                      <div key={idx}>{user}</div>
-                    ))}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+{node.type === "role" && node.users_count !== undefined && node.users_list && (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger>
+        <div
+          className="mt-2 text-sm cursor-pointer underline text-purple-900 bg-yellow-400 px-2 rounded select-none"
+          style={{ userSelect: "none" }}
+        >
+          Users ({node.users_count})
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className="text-sm space-y-1 max-w-xs">
+          {node.users_list.map((user: string, idx: number) => (
+            <div key={idx}>{user}</div>
+          ))}
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+)}
+
+
+          
         </Card>
 
         {node.children && node.children.length > 0 && (
