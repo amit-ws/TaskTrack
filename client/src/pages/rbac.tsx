@@ -26,10 +26,9 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
+import { Badge } from "@/components/ui/badge";
 
-// ------------------------------
-// Orphaned & High-Risk Roles Data
-// ------------------------------
+// -------------- Existing Data and Helpers --------------
 const orphanedRoles = [
   { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
   { roleName: "DEVELOPER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
@@ -45,54 +44,15 @@ const highRiskRoleNames = ["Select Role", "ACCOUNTADMIN", "ORGADMIN", "SECURITYA
 
 const highRiskData: Record<string, any[]> = {
   ORGADMIN: [
-    {
-      privilege: "MANAGE BILLING",
-      grantedOn: "ACCOUNT",
-      objectName: "ZM08212",
-      grantOption: "TRUE",
-      createdOn: "Jul 28, 2025, 12:32 PM",
-    },
-    {
-      privilege: "CREATE LISTING",
-      grantedOn: "ACCOUNT",
-      objectName: "ZM08212",
-      grantOption: "TRUE",
-      createdOn: "Jul 28, 2025, 12:32 PM",
-    },
-    {
-      privilege: "MANAGE LISTING AUTO FULFILLMENT",
-      grantedOn: "ACCOUNT",
-      objectName: "ZM08212",
-      grantOption: "TRUE",
-      createdOn: "Jul 28, 2025, 12:32 PM",
-    },
-    {
-      privilege: "PURCHASE DATA EXCHANGE LISTING",
-      grantedOn: "ACCOUNT",
-      objectName: "ZM08212",
-      grantOption: "TRUE",
-      createdOn: "Jul 28, 2025, 12:32 PM",
-    },
-    {
-      privilege: "MANAGE ORGANIZATION SUPPORT CASES",
-      grantedOn: "ACCOUNT",
-      objectName: "ZM08212",
-      grantOption: "TRUE",
-      createdOn: "Jul 28, 2025, 12:32 PM",
-    },
-    {
-      privilege: "APPLY TAG",
-      grantedOn: "ACCOUNT",
-      objectName: "ZM08212",
-      grantOption: "TRUE",
-      createdOn: "Jul 28, 2025, 12:32 PM",
-    },
+    { privilege: "MANAGE BILLING", grantedOn: "ACCOUNT", objectName: "ZM08212", grantOption: "TRUE", createdOn: "Jul 28, 2025, 12:32 PM" },
+    { privilege: "CREATE LISTING", grantedOn: "ACCOUNT", objectName: "ZM08212", grantOption: "TRUE", createdOn: "Jul 28, 2025, 12:32 PM" },
+    { privilege: "MANAGE LISTING AUTO FULFILLMENT", grantedOn: "ACCOUNT", objectName: "ZM08212", grantOption: "TRUE", createdOn: "Jul 28, 2025, 12:32 PM" },
+    { privilege: "PURCHASE DATA EXCHANGE LISTING", grantedOn: "ACCOUNT", objectName: "ZM08212", grantOption: "TRUE", createdOn: "Jul 28, 2025, 12:32 PM" },
+    { privilege: "MANAGE ORGANIZATION SUPPORT CASES", grantedOn: "ACCOUNT", objectName: "ZM08212", grantOption: "TRUE", createdOn: "Jul 28, 2025, 12:32 PM" },
+    { privilege: "APPLY TAG", grantedOn: "ACCOUNT", objectName: "ZM08212", grantOption: "TRUE", createdOn: "Jul 28, 2025, 12:32 PM" },
   ],
 };
 
-// ------------------------------
-// User Permissions Mapping Data
-// ------------------------------
 const users = [
   { id: "API_USER", name: "API_USER" },
   { id: "AMITP", name: "AMITP" },
@@ -120,9 +80,7 @@ const graphData: Record<string, any> = {
               {
                 name: "Role_2",
                 type: "role",
-                privileges: {
-                  INSERT: ["TESTDB.PUBLIC.CUSTOMERS"],
-                },
+                privileges: { INSERT: ["TESTDB.PUBLIC.CUSTOMERS"] },
                 children: [
                   {
                     name: "Role_3",
@@ -168,9 +126,6 @@ const graphData: Record<string, any> = {
   },
 };
 
-// ------------------------------
-// Role Permissions Mapping Data
-// ------------------------------
 const roleUsers = [
   { id: "ROLE_1", name: "ROLE_1" },
   { id: "ROLE_2", name: "ROLE_2" },
@@ -201,9 +156,7 @@ const roleGraphData: Record<string, any> = {
                 type: "role",
                 users_count: 2,
                 users_list: ["AMITP", "VMAMIDI"],
-                privileges: {
-                  INSERT: ["TESTDB.PUBLIC.CUSTOMERS"],
-                },
+                privileges: { INSERT: ["TESTDB.PUBLIC.CUSTOMERS"] },
                 children: [],
               },
               {
@@ -228,8 +181,8 @@ const roleGraphData: Record<string, any> = {
           {
             name: "Direct Grants Privileges",
             type: "role",
-                  "users_count": 3,
-            "users_list": ["API_USER", "AMITP", "DEV_USER"],
+            users_count: 3,
+            users_list: ["API_USER", "AMITP", "DEV_USER"],
             privileges: {
               SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
               INSERT: ["TESTDB.PUBLIC.USERS"],
@@ -241,11 +194,6 @@ const roleGraphData: Record<string, any> = {
     ],
   },
 };
-
-
-// ------------------------------
-// Granted-users for High Risk Roles
-// ------------------------------
 
 const grantedUsersData = [
   {
@@ -282,7 +230,6 @@ const grantedUsersData = [
   },
 ];
 
-// Helper: get color for usage badge
 function getBytesConsumedColor(bytes: number) {
   if (bytes > 100) return "bg-red-600 text-white";
   if (bytes > 50) return "bg-red-500 text-white";
@@ -290,120 +237,327 @@ function getBytesConsumedColor(bytes: number) {
   return "bg-red-300 text-black";
 }
 
+// -------------- Role Usage Tab Implementation --------------
+const usageUsers = ["API_USER", "AMITP", "VMAMIDI", "DEV_USER"];
+const daysOptions = [7, 15, 30];
 
-// ------------------------------
-// Main Component
-// ------------------------------
-export default function RBAC() {
-  const [selectedRole, setSelectedRole] = useState("ORGADMIN");
+const rbacData: Record<string, any> = {
+  API_USER: {
+    user: "API_USER",
+    days: 30,
+    roles: [
+      {
+        role_name: "ROLE1",
+        grant_type: "Direct_Role",
+        grant_via: null,
+        objects: ["TESTDB.PUBLIC.ORDERS", "TESTDB.PUBLIC.CUSTOMERS"],
+        privileges: ["SELECT", "UPDATE"],
+        usage: {
+          credits_consumed: 5.5,
+          total_queries_fired: 120,
+          total_data_processed_in_mb: 1850,
+          bytes_written: 104857600,
+          rows_inserted: 0,
+          rows_updated: 1500,
+          rows_deleted: 0,
+          execution_time_ms: 985000,
+          queued_overload_time_ms: 15000,
+        },
+      },
+      {
+        role_name: "ROLE2",
+        grant_type: "Inherited_Role",
+        grant_via: "ROLE1",
+        objects: ["TESTDB.PUBLIC.SALES"],
+        privileges: ["INSERT"],
+        usage: {
+          credits_consumed: 3.8,
+          total_queries_fired: 45,
+          total_data_processed_in_mb: 760,
+          bytes_written: 52428800,
+          rows_inserted: 5000,
+          rows_updated: 0,
+          rows_deleted: 0,
+          execution_time_ms: 375000,
+          queued_overload_time_ms: 9000,
+        },
+      },
+      {
+        role_name: "ROLE3",
+        grant_type: "Inherited_Role",
+        grant_via: "ROLE2",
+        objects: ["TESTDB.ANALYTICS.REPORTS"],
+        privileges: ["SELECT", "UPDATE", "DELETE"],
+        usage: {
+          credits_consumed: 2.4,
+          total_queries_fired: 82,
+          total_data_processed_in_mb: 990,
+          bytes_written: 20971520,
+          rows_inserted: 0,
+          rows_updated: 1200,
+          rows_deleted: 800,
+          execution_time_ms: 445000,
+          queued_overload_time_ms: 10000,
+        },
+      },
+      {
+        role_name: "ROLE4",
+        grant_type: "Inherited_Role",
+        grant_via: "ROLE1",
+        objects: ["TESTDB.STAGING.TEMP_DATA"],
+        privileges: ["DELETE", "UPDATE"],
+        usage: {
+          credits_consumed: 0.6,
+          total_queries_fired: 27,
+          total_data_processed_in_mb: 410,
+          bytes_written: 10485760,
+          rows_inserted: 0,
+          rows_updated: 300,
+          rows_deleted: 150,
+          execution_time_ms: 128000,
+          queued_overload_time_ms: 2000,
+        },
+      },
+    ],
+  },
+  AMITP: { user: "AMITP", days: 30, roles: [] },
+  VMAMIDI: { user: "VMAMIDI", days: 30, roles: [] },
+  DEV_USER: { user: "DEV_USER", days: 30, roles: [] },
+};
+
+const getCreditColor = (value: number, max: number) => {
+  const intensity = value / max;
+  if (intensity > 0.8) return "bg-red-500/20 text-red-400";
+  if (intensity > 0.6) return "bg-orange-500/20 text-orange-400";
+  if (intensity > 0.4) return "bg-yellow-500/20 text-yellow-400";
+  if (intensity > 0.2) return "bg-green-500/20 text-green-400";
+  return "bg-slate-600/20 text-slate-300";
+};
+
+function RoleUsageSection() {
   const [selectedUser, setSelectedUser] = useState("API_USER");
-  const [selectedRoleForMapping, setSelectedRoleForMapping] = useState("ROLE_1");
+  const [selectedDays, setSelectedDays] = useState(7);
 
-  const typeColors: Record<string, { card: string; text: string }> = {
-    user: { card: "border-blue-500 bg-[#0d1b2a]", text: "text-blue-400" },
-    category: { card: "border-green-500 bg-[#0d2a1d]", text: "text-green-400" },
-    role: { card: "border-purple-500 bg-[#1a1425]", text: "text-purple-400" },
-  };
+  const data = rbacData[selectedUser];
+  const filteredRoles = data.roles.filter(() => data.days >= selectedDays);
 
-  const renderPrivileges = (privileges: Record<string, string[]> | undefined) => {
-    if (!privileges) return null;
-    return (
-      <div className="flex flex-col items-center mt-2 space-y-1">
-        {Object.entries(privileges).map(([priv, objs]) => (
-          <TooltipProvider key={priv}>
+  const maxCredits = filteredRoles.length > 0
+    ? Math.max(...filteredRoles.map((r) => r.usage.credits_consumed))
+    : 0;
+
+  return (
+    <section className="space-y-6 text-white">
+      <Card className="bg-[#0d1b2a] border border-slate-700">
+        <div className="p-6 border-b border-slate-700">
+          <h3 className="text-lg font-semibold text-white">RBAC Roles &amp; Usage</h3>
+          <p className="text-sm mt-1 text-slate-400">
+            Role-based access control details & usage for selected users.
+          </p>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <div className="flex items-center space-x-4">
+            <select
+              className="px-4 py-2 text-sm rounded-md bg-slate-800 text-white border border-slate-700 focus:ring-2 focus:ring-blue-600"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+            >
+              {usageUsers.map((u) => (
+                <option key={u} value={u}>{u}</option>
+              ))}
+            </select>
+            <select
+              className="px-4 py-2 text-sm rounded-md bg-slate-800 text-white border border-slate-700 focus:ring-2 focus:ring-blue-600"
+              value={selectedDays}
+              onChange={(e) => setSelectedDays(Number(e.target.value))}
+            >
+              {daysOptions.map((d) => (
+                <option key={d} value={d}>{`Last ${d} days`}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-slate-400 border-b border-slate-700">
+                  <th className="text-left py-4 px-4">Role Name</th>
+                  <th className="text-left py-4 px-4">Grant Type</th>
+                  <th className="text-left py-4 px-4">Grant Via</th>
+                  <th className="text-left py-4 px-4">Objects</th>
+                  <th className="text-left py-4 px-4">Privileges</th>
+                  <th className="text-left py-4 px-4">Credits Consumed</th>
+                  <th className="text-left py-4 px-4">Queries Fired</th>
+                  <th className="text-left py-4 px-4">Data Processed (MB)</th>
+                  <th className="text-left py-4 px-4">Rows Inserted</th>
+                  <th className="text-left py-4 px-4">Rows Updated</th>
+                  <th className="text-left py-4 px-4">Rows Deleted</th>
+                  <th className="text-left py-4 px-4">Execution Time (s)</th>
+                </tr>
+              </thead>
+              <tbody className="text-slate-300">
+                {filteredRoles.length === 0 ? (
+                  <tr>
+                    <td colSpan={12} className="py-6 text-center text-slate-500 italic">
+                      No roles assigned for {selectedUser} in the last {selectedDays} days
+                    </td>
+                  </tr>
+                ) : (
+                  filteredRoles.map((role) => (
+                    <tr key={role.role_name} className="border-b border-slate-800">
+                      <td className="py-4 px-4 font-semibold">{role.role_name}</td>
+                      <td className="py-4 px-4">
+                        <Badge
+                          className={`text-xs ${
+                            role.grant_type === "Direct_Role"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : "bg-purple-500/20 text-purple-400"
+                          }`}
+                        >
+                          {role.grant_type === "Direct_Role" ? "Direct" : "Inherited"}
+                        </Badge>
+                      </td>
+                      <td className="py-4 px-4">
+                        {role.grant_via ? (
+                          <Badge className="text-xs bg-slate-600/20 text-slate-300">{role.grant_via}</Badge>
+                        ) : (
+                          <span className="text-slate-500 italic text-xs">—</span>
+                        )}
+                      </td>
+                      <td className="py-4 px-4">
+                        {role.objects.map((obj, i) => <div key={i}>{obj}</div>)}
+                      </td>
+                      <td className="py-4 px-4">
+                        {role.privileges.map((priv, i) => (
+                          <Badge key={i} className="text-xs bg-green-500/20 text-green-400 mr-1">{priv}</Badge>
+                        ))}
+                      </td>
+                      <td className="py-4 px-4">
+                        <Badge className={`text-xs ${getCreditColor(role.usage.credits_consumed, maxCredits)}`}>
+                          {role.usage.credits_consumed}
+                        </Badge>
+                      </td>
+                      <td className="py-4 px-4">{role.usage.total_queries_fired.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.total_data_processed_in_mb.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.rows_inserted.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.rows_updated.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.rows_deleted.toLocaleString()}</td>
+                      <td className="py-4 px-4">{(role.usage.execution_time_ms / 1000).toFixed(1)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </Card>
+    </section>
+  );
+}
+
+// -------------- Reusable Helpers for Tree Rendering --------------
+const typeColors: Record<string, { card: string; text: string }> = {
+  user: { card: "border-blue-500 bg-[#0d1b2a]", text: "text-blue-400" },
+  category: { card: "border-green-500 bg-[#0d2a1d]", text: "text-green-400" },
+  role: { card: "border-purple-500 bg-[#1a1425]", text: "text-purple-400" },
+};
+
+const renderPrivileges = (privileges: Record<string, string[]> | undefined) => {
+  if (!privileges) return null;
+  return (
+    <div className="flex flex-col items-center mt-2 space-y-1">
+      {Object.entries(privileges).map(([priv, objs]) => (
+        <TooltipProvider key={priv}>
+          <Tooltip>
+            <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-300 font-semibold">
+              {priv} <span className="text-white-500">({objs.length})</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="text-sm space-y-1 max-w-xs">
+                {objs.map((obj, i) => <div key={i}>{obj}</div>)}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ))}
+    </div>
+  );
+};
+
+const renderNode = (node: any) => {
+  const colors = typeColors[node.type] || typeColors.role;
+  return (
+    <div className="flex flex-col items-center">
+      <Card className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}>
+        <div className="font-bold text-md uppercase text-center">
+          {node.name === "Direct Grants Privileges" ? null : node.name}
+        </div>
+        {renderPrivileges(node.privileges)}
+      </Card>
+      {node.children?.length > 0 && (
+        <div className="flex flex-col items-center">
+          <div className="h-8 w-px bg-gray-500"></div>
+          <div className="flex space-x-6">
+            {node.children.map((child: any, idx: number) => (
+              <div key={idx} className="flex flex-col items-center">
+                {renderNode(child)}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const renderRoleNode = (node: any) => {
+  if (node.name === "Self Grants Privileges") return null;
+  const colors = typeColors[node.type] || typeColors.role;
+  return (
+    <div className="flex flex-col items-center">
+      <Card className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}>
+        <div className="font-bold text-md uppercase text-center">
+          {node.name === "Direct Grants Privileges" ? null : node.name}
+        </div>
+        {renderPrivileges(node.privileges)}
+        {node.type === "role" && node.users_count !== undefined && node.users_list && (
+          <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-300 font-semibold">
-                {priv} <span className="text-white-500">({objs.length})</span>
+              <TooltipTrigger>
+                <div className="mt-2 text-sm cursor-pointer underline text-purple-900 px-2 rounded select-none" style={{ backgroundColor: "gold" }}>
+                  Users ({node.users_count})
+                </div>
               </TooltipTrigger>
               <TooltipContent>
                 <div className="text-sm space-y-1 max-w-xs">
-                  {objs.map((obj, i) => (
-                    <div key={i}>{obj}</div>
-                  ))}
+                  {node.users_list.map((u: string, i: number) => <div key={i}>{u}</div>)}
                 </div>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        ))}
-      </div>
-    );
-  };
-
-  const renderNode = (node: any) => {
-    const colors = typeColors[node.type] || typeColors.role;
-    return (
-      <div className="flex flex-col items-center">
-        <Card className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}>
-          <div className="font-bold text-md uppercase text-center">
-            {node.name === "Direct Grants Privileges" ? null : node.name}
-          </div>
-          {renderPrivileges(node.privileges)}
-        </Card>
-        {node.children && node.children.length > 0 && (
-          <div className="flex flex-col items-center">
-            <div className="h-8 w-px bg-gray-500"></div>
-            <div className="flex space-x-6">
-              {node.children.map((child: any, idx: number) => (
-                <div key={idx} className="flex flex-col items-center">
-                  {renderNode(child)}
-                </div>
-              ))}
-            </div>
-          </div>
         )}
-      </div>
-    );
-  };
-
-  // Role Permissions Mapping render logic (with users_count tooltip, etc.)
-  const renderRoleNode = (node: any) => {
-    if (node.name === "Self Grants Privileges") {
-      return null;
-    }
-    const colors = typeColors[node.type] || typeColors.role;
-    return (
-      <div className="flex flex-col items-center">
-        <Card className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}>
-          <div className="font-bold text-md uppercase text-center">
-            {node.name === "Direct Grants Privileges" ? null : node.name}
+      </Card>
+      {node.children?.length > 0 && (
+        <div className="flex flex-col items-center">
+          <div className="h-8 w-px bg-gray-500"></div>
+          <div className="flex space-x-6">
+            {node.children.map((child: any, idx: number) => (
+              <div key={idx} className="flex flex-col items-center">
+                {renderRoleNode(child)}
+              </div>
+            ))}
           </div>
-          {renderPrivileges(node.privileges)}
-          {node.type === "role" && node.users_count !== undefined && node.users_list && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  {/* <div className="mt-2 text-sm cursor-pointer underline text-purple-900 bg-yellow-400 px-2 rounded select-none"> */}
-                  <div className="mt-2 text-sm cursor-pointer underline text-purple-900 px-2 rounded select-none" style={{ backgroundColor: 'gold' }}>
+        </div>
+      )}
+    </div>
+  );
+};
 
-                    Users ({node.users_count})
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="text-sm space-y-1 max-w-xs">
-                    {node.users_list.map((user: string, idx: number) => (
-                      <div key={idx}>{user}</div>
-                    ))}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </Card>
-        {node.children && node.children.length > 0 && (
-          <div className="flex flex-col items-center">
-            <div className="h-8 w-px bg-gray-500"></div>
-            <div className="flex space-x-6">
-              {node.children.map((child: any, idx: number) => (
-                <div key={idx} className="flex flex-col items-center">
-                  {renderRoleNode(child)}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
+// --------------------------- Main RBAC Component ---------------------------
+export default function RBAC() {
+  const [selectedRole, setSelectedRole] = useState("ORGADMIN");
+  const [selectedUser, setSelectedUser] = useState("API_USER");
+  const [selectedRoleForMapping, setSelectedRoleForMapping] = useState("ROLE_1");
 
   return (
     <Card className="backdrop-blur-md bg-black/80 border border-slate-800 rounded-xl shadow-2xl p-6">
@@ -419,10 +573,12 @@ export default function RBAC() {
             <TabsTrigger value="high-risk-roles">🔥 High-Risk Roles</TabsTrigger>
             <TabsTrigger value="user-permissions">🧭 User Permissions Mapping</TabsTrigger>
             <TabsTrigger value="role-permissions">🔗 Role Permissions Mapping</TabsTrigger>
+            <TabsTrigger value="role-usage">📊 Role Usage</TabsTrigger>
           </TabsList>
 
-          {/* Orphaned Roles */}
-      <TabsContent value="orphaned-roles">
+          {/* Tab Contents */}
+                    {/* Orphaned Roles */}
+     <TabsContent value="orphaned-roles">
             <div className="overflow-auto rounded-lg border border-slate-700">
               <table className="min-w-full bg-black text-slate-200 text-xs">
                 <thead className="uppercase bg-slate-900 text-slate-400 border-b border-slate-700">
@@ -605,6 +761,10 @@ export default function RBAC() {
                 {roleGraphData[selectedRoleForMapping] && renderRoleNode(roleGraphData[selectedRoleForMapping])}
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="role-usage">
+            <RoleUsageSection />
           </TabsContent>
         </Tabs>
       </CardContent>
