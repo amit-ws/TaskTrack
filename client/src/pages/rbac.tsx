@@ -99,8 +99,6 @@ const graphData: Record<string, any> = {
   },
 };
 
-// ... all imports and data same as before ...
-
 export default function RBACGraphTab() {
   const [selectedUser, setSelectedUser] = useState<string>("API_USER");
 
@@ -110,6 +108,7 @@ export default function RBACGraphTab() {
     role: { card: "border-purple-500 bg-[#1a1425]", badge: "bg-purple-900 text-purple-300", text: "text-purple-400" },
   };
 
+  // Render privileges from object: privilegeName => [objects]
   const renderPrivileges = (privilegesObj: Record<string, string[]>) => {
     if (!privilegesObj) return null;
 
@@ -138,6 +137,7 @@ export default function RBACGraphTab() {
     );
   };
 
+  // Render users badge with tooltip
   const renderUsers = (users_count?: number, users_list?: string[]) => {
     if (!users_count || !users_list || users_count === 0) return null;
 
@@ -162,22 +162,8 @@ export default function RBACGraphTab() {
   };
 
   const renderNode = (node: any) => {
-    // Skip rendering node named "Self Grants Privileges"
-    if (node.name === "Self Grants Privileges") {
-      // If it had children, render those, else return null
-      if (node.children && node.children.length > 0) {
-        return (
-          <div className="flex space-x-6">
-            {node.children.map((child: any, idx: number) => (
-              <div key={idx} className="flex flex-col items-center">
-                {renderNode(child)}
-              </div>
-            ))}
-          </div>
-        );
-      }
-      return null;
-    }
+    // Skip rendering "Self Grants Privileges" node
+    if (node.name === "Self Grants Privileges") return null;
 
     const colors = typeColors[node.type] || typeColors.role;
 
@@ -229,16 +215,16 @@ export default function RBACGraphTab() {
         </Select>
       </div>
 
-      {/* Render the root user node first */}
-      <div className="flex flex-col items-center">
+      {/* Show the user node at top */}
+      <div className="flex flex-col items-center mb-8">
         {renderNode(userGraph)}
+      </div>
 
-        {/* Then render the children categories side-by-side */}
-        <div className="flex justify-center space-x-8 mt-8">
-          {userGraph.children && userGraph.children.map((child: any, idx: number) => (
-            <div key={idx}>{renderNode(child)}</div>
-          ))}
-        </div>
+      {/* Render children categories side-by-side */}
+      <div className="flex justify-center space-x-8">
+        {userGraph.children && userGraph.children.map((child: any, idx: number) => (
+          <div key={idx}>{renderNode(child)}</div>
+        ))}
       </div>
     </div>
   );
