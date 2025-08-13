@@ -283,39 +283,58 @@ export default function RBAC() {
       </tr>
     </thead>
     <tbody>
-      {grantedUsersData.map((user, idx) => (
-        <tr
-          key={user.user_name}
-          className={clsx(
-            idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
-          )}
-        >
-<td className="px-6 py-3">
-<Badge className="bg-green-100 text-green-900 font-medium text-xs px-2 py-1 rounded">
-  {user.user_name}
-</Badge>
+      {grantedUsersData.map((user, idx) => {
+        // Inline color logic inside map
+        const colors = [
+          "bg-blue-500",
+          "bg-purple-500",
+          "bg-green-500",
+          "bg-orange-500",
+          "bg-cyan-500",
+          "bg-yellow-500",
+          "bg-indigo-500",
+        ];
+        const charSum = user.user_name
+          .split("")
+          .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+        const colorClass = colors[charSum % colors.length];
 
-</td>
+        return (
+          <tr
+            key={user.user_name}
+            className={clsx(
+              idx % 2 === 0 ? "bg-slate-900/60" : "bg-slate-800/60"
+            )}
+          >
+            <td className="px-6 py-3">
+              <Badge
+                className={`${colorClass} text-white font-medium text-xs px-2 py-1 rounded`}
+              >
+                {user.user_name}
+              </Badge>
+            </td>
 
-          <td className="px-6 py-3">{user.grant_type}</td>
-          <td className="px-6 py-3">{user.grant_via || "-"}</td>
-          <td className="px-6 py-3">{user.total_queries}</td>
-          <td className="px-6 py-3">{user.gross_data_modified}</td>
-          <td className="px-6 py-3">
-            <span
-              className={clsx(
-                "inline-block px-2 py-1 rounded text-xs font-semibold",
-                getBytesConsumedColor(user.bytes_consumed)
-              )}
-            >
-              {user.bytes_consumed}
-            </span>
-          </td>
-        </tr>
-      ))}
+            <td className="px-6 py-3">{user.grant_type}</td>
+            <td className="px-6 py-3">{user.grant_via || "-"}</td>
+            <td className="px-6 py-3">{user.total_queries}</td>
+            <td className="px-6 py-3">{user.gross_data_modified}</td>
+            <td className="px-6 py-3">
+              <span
+                className={clsx(
+                  "inline-block px-2 py-1 rounded text-xs font-semibold",
+                  getBytesConsumedColor(user.bytes_consumed)
+                )}
+              >
+                {user.bytes_consumed}
+              </span>
+            </td>
+          </tr>
+        );
+      })}
     </tbody>
   </table>
 </div>
+
 
           </TabsContent>
         </Tabs>
