@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 const roles = ["ROLE1", "ROLE2", "ROLE3", "ROLE4"];
 const daysOptions = [7, 15, 30, -1]; // -1 for ALL-TIME
 
-// Sample data - mapped to ROLE1 (for demo)
 const roleAuditTrail = [
   {
     event_date: "2025-07-01T09:15:00Z",
@@ -86,7 +85,7 @@ const roleAuditTrail = [
   },
 ];
 
-// Map action to consistent badge colors
+// Badge colors for actions
 const actionColors: Record<string, string> = {
   CREATE_ROLE: "bg-green-500/20 text-green-400",
   GRANT: "bg-blue-500/20 text-blue-400",
@@ -94,20 +93,25 @@ const actionColors: Record<string, string> = {
   ALTER: "bg-orange-500/20 text-orange-400",
 };
 
+// Badge colors for performed_by
+const performedByColors: Record<string, string> = {
+  SYSTEM_ADMIN: "bg-purple-500/20 text-purple-400",
+  SECURITY_ADMIN: "bg-teal-500/20 text-teal-400",
+  DEFAULT: "bg-slate-600/20 text-slate-400",
+};
+
 const daysToMilliseconds = (days: number) => days * 24 * 60 * 60 * 1000;
 
 export default function RbacSection() {
   const [selectedRole, setSelectedRole] = useState("ROLE1");
-  const [selectedDays, setSelectedDays] = useState(7);
+  const [selectedDays, setSelectedDays] = useState(-1); // ALL-TIME by default
 
-  // Filtering logic:
-  // - For demo: all data is for ROLE1, so other roles show no data
-  // - Filter by date timeframe
   const now = new Date();
+
   const filteredData =
     selectedRole === "ROLE1"
       ? roleAuditTrail.filter(({ event_date }) => {
-          if (selectedDays === -1) return true; // ALL-TIME
+          if (selectedDays === -1) return true;
           const eventTime = new Date(event_date).getTime();
           return now.getTime() - eventTime <= daysToMilliseconds(selectedDays);
         })
@@ -182,12 +186,24 @@ export default function RbacSection() {
                         })}
                       </td>
                       <td className="py-4 px-4">
-                        <Badge className={`text-xs ${actionColors[event.action] ?? "bg-slate-600/20 text-slate-300"}`}>
+                        <Badge
+                          className={`text-xs ${
+                            actionColors[event.action] ?? "bg-slate-600/20 text-slate-300"
+                          }`}
+                        >
                           {event.action}
                         </Badge>
                       </td>
                       <td className="py-4 px-4">{event.description}</td>
-                      <td className="py-4 px-4">{event.performed_by}</td>
+                      <td className="py-4 px-4">
+                        <Badge
+                          className={`text-xs ${
+                            performedByColors[event.performed_by] ?? performedByColors.DEFAULT
+                          }`}
+                        >
+                          {event.performed_by}
+                        </Badge>
+                      </td>
                       <td className="py-4 px-4">{event.details}</td>
                     </tr>
                   ))
