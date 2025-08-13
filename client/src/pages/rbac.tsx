@@ -189,8 +189,8 @@ const roleGraphData: Record<string, any> = {
           {
             name: "Role_2",
             type: "role",
-            users_count: 5,
-            users_list: ["user1", "user2", "user3", "user4", "user5"],
+            users_count: 4,
+            users_list: ["AMITP", "API_USER", "VMAMIDI", "DEV_USER"],
             privileges: {
               SELECT: ["TESTDB.PUBLIC.ORDERS", "TESTDB.PUBLIC.ORDER_ITEMS"],
               UPDATE: ["TESTDB.PUBLIC.PRODUCTS"],
@@ -200,30 +200,17 @@ const roleGraphData: Record<string, any> = {
                 name: "Role_3",
                 type: "role",
                 users_count: 2,
-                users_list: ["user2", "user3"],
+                users_list: ["AMITP", "VMAMIDI"],
                 privileges: {
                   INSERT: ["TESTDB.PUBLIC.CUSTOMERS"],
                 },
-                children: [
-                  {
-                    name: "Role_4",
-                    type: "role",
-                    users_count: 3,
-                    users_list: ["user2", "user3", "user4"],
-                    privileges: {
-                      SELECT: ["TESTDB.PUBLIC.REVIEWS"],
-                      UPDATE: ["TESTDB.PUBLIC.USERS"],
-                      DELETE: ["TESTDB.PUBLIC.SESSIONS"],
-                    },
-                    children: [],
-                  },
-                ],
+                children: [],
               },
               {
                 name: "Role_5",
                 type: "role",
                 users_count: 1,
-                users_list: ["user5"],
+                users_list: ["AMITP"],
                 privileges: {
                   DELETE: ["DEMODB.PUBLIC.INVENTORY"],
                   UPDATE: ["DEMODB.PUBLIC.SALES"],
@@ -242,7 +229,7 @@ const roleGraphData: Record<string, any> = {
             name: "Direct Grants Privileges",
             type: "role",
                   "users_count": 3,
-            "users_list": ["user1", "user2", "user3"],
+            "users_list": ["API_USER", "AMITP", "DEV_USER"],
             privileges: {
               SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
               INSERT: ["TESTDB.PUBLIC.USERS"],
