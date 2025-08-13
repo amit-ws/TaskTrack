@@ -16,8 +16,9 @@ import {
 
 const users = [
   { id: "API_USER", name: "API_USER" },
-  { id: "User_2", name: "User_2" },
-  { id: "User_3", name: "User_3" },
+  { id: "AMITP", name: "AMITP" },
+  { id: "DEV_USER", name: "DEV_USER" },
+  { id: "VMAMIDI", name: "VMAMIDI" },
 ];
 
 const graphData: Record<string, any> = {
@@ -78,23 +79,21 @@ const graphData: Record<string, any> = {
         ],
       },
       {
-        name: "Self",
+        name: "Direct Grants",
         type: "category",
         children: [
           {
-            name: "Self Grants Privileges",
+            name: "Direct Grants Privileges",
             type: "role",
-            users_count: 3,
-            users_list: ["user1", "user2", "user3"],
             privileges: {
               SELECT: ["TESTDB.PUBLIC.ORDERS_SUMARY", "DEMODB.PUBLIC.SALES_SUMARY"],
               INSERT: ["TESTDB.PUBLIC.USERS"],
               DELETE: ["TESTDB.PUBLIC.ADDRESSES"],
             },
-            children: [],
           },
         ],
       },
+      // The Self Grants Privileges node is intentionally excluded from rendering
     ],
   },
 };
@@ -103,29 +102,36 @@ export default function RBACGraphTab() {
   const [selectedUser, setSelectedUser] = useState<string>("API_USER");
 
   const typeColors: Record<string, { card: string; badge: string; text: string }> = {
-    user: { card: "border-blue-500 bg-[#0d1b2a]", badge: "bg-blue-900 text-blue-300", text: "text-blue-400" },
-    category: { card: "border-green-500 bg-[#0d2a1d]", badge: "bg-green-900 text-green-300", text: "text-green-400" },
-    role: { card: "border-purple-500 bg-[#1a1425]", badge: "bg-purple-900 text-purple-300", text: "text-purple-400" },
+    user: {
+      card: "border-blue-500 bg-[#0d1b2a]",
+      badge: "bg-blue-900 text-blue-300",
+      text: "text-blue-400",
+    },
+    category: {
+      card: "border-green-500 bg-[#0d2a1d]",
+      badge: "bg-green-900 text-green-300",
+      text: "text-green-400",
+    },
+    role: {
+      card: "border-purple-500 bg-[#1a1425]",
+      badge: "bg-purple-900 text-purple-300",
+      text: "text-purple-400",
+    },
   };
 
-  // Render privileges from object: privilegeName => [objects]
-  const renderPrivileges = (privilegesObj: Record<string, string[]>) => {
-    if (!privilegesObj) return null;
-
-    const entries = Object.entries(privilegesObj);
-    if (entries.length === 0) return null;
-
+  const renderPrivileges = (privileges: Record<string, string[]> | undefined) => {
+    if (!privileges) return null;
     return (
-      <div className="flex flex-col items-center mt-2 space-y-1 max-w-xs">
-        {entries.map(([privName, objects]) => (
-          <TooltipProvider key={privName}>
+      <div className="flex flex-col items-center mt-2 space-y-1">
+        {Object.entries(privileges).map(([priv, objs]) => (
+          <TooltipProvider key={priv}>
             <Tooltip>
               <TooltipTrigger className="text-sm cursor-pointer hover:underline text-gray-300 font-semibold">
-                {privName} <span className="text-white-500">({objects.length})</span>
+                {priv} <span className="text-white-500">({objs.length})</span>
               </TooltipTrigger>
               <TooltipContent>
-                <div className="text-sm space-y-1">
-                  {objects.map((obj, i) => (
+                <div className="text-sm space-y-1 max-w-xs">
+                  {objs.map((obj, i) => (
                     <div key={i}>{obj}</div>
                   ))}
                 </div>
@@ -137,33 +143,11 @@ export default function RBACGraphTab() {
     );
   };
 
-  // Render users badge with tooltip
-  const renderUsers = (users_count?: number, users_list?: string[]) => {
-    if (!users_count || !users_list || users_count === 0) return null;
-
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <div className="mt-3 px-2 py-0.5 rounded-full bg-yellow-700 text-yellow-200 text-xs font-semibold cursor-pointer select-none">
-              Users: {users_count}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-xs">
-            <div className="text-sm space-y-0.5">
-              {users_list.map((u, i) => (
-                <div key={i}>{u}</div>
-              ))}
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  };
-
   const renderNode = (node: any) => {
-    // Skip rendering "Self Grants Privileges" node
-    if (node.name === "Self Grants Privileges") return null;
+    // Skip "Self Grants Privileges" node entirely
+    if (node.name === "Self Grants Privileges") {
+      return null;
+    }
 
     const colors = typeColors[node.type] || typeColors.role;
 
@@ -172,11 +156,35 @@ export default function RBACGraphTab() {
         <Card
           className={`px-3 py-2 rounded-xl shadow-lg border-2 ${colors.card} ${colors.text} min-w-[140px] flex flex-col items-center`}
         >
-          <div className="font-bold text-md uppercase text-center">{node.name}</div>
+          {/* Hide node name for "Direct Grants Privileges" */}
+          <div className="font-bold text-md uppercase text-center">
+            {node.name === "Direct Grants Privileges" ? null : node.name}
+          </div>
 
-          {node.privileges && renderPrivileges(node.privileges)}
+          {renderPrivileges(node.privileges)}
 
-          {renderUsers(node.users_count, node.users_list)}
+          {/* Show users count + tooltip if this is a role with users_count */}
+          {node.type === "role" && node.users_count !== undefined && node.users_list && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    className="mt-2 text-sm cursor-pointer underline text-purple-300"
+                    style={{ userSelect: "none" }}
+                  >
+                    Users ({node.users_count})
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="text-sm space-y-1 max-w-xs">
+                    {node.users_list.map((user: string, idx: number) => (
+                      <div key={idx}>{user}</div>
+                    ))}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </Card>
 
         {node.children && node.children.length > 0 && (
@@ -215,17 +223,8 @@ export default function RBACGraphTab() {
         </Select>
       </div>
 
-      {/* Show the user node at top */}
-      <div className="flex flex-col items-center mb-8">
-        {renderNode(userGraph)}
-      </div>
-
-      {/* Render children categories side-by-side */}
-      <div className="flex justify-center space-x-8">
-        {userGraph.children && userGraph.children.map((child: any, idx: number) => (
-          <div key={idx}>{renderNode(child)}</div>
-        ))}
-      </div>
+      {/* Graph */}
+      <div className="flex justify-center">{userGraph && renderNode(userGraph)}</div>
     </div>
   );
 }
