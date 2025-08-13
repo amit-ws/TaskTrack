@@ -15,15 +15,14 @@ import {
 } from "@/components/ui/tooltip";
 
 const users = [
-  { id: "API_USER", name: "API_USER" },
-  { id: "AMITP", name: "AMITP" },
-  { id: "DEV_USER", name: "DEV_USER" },
-  { id: "VMAMIDI", name: "VMAMIDI" },
+  { id: "ROLE_1", name: "ROLE_1" },
+  { id: "ROLE_2", name: "ROLE_2" },
+  { id: "ROLE_3", name: "ROLE_3" },
 ];
 
 const graphData: Record<string, any> = {
   API_USER: {
-    name: "API_USER",
+    name: "ROLE_1",
     type: "user",
     children: [
       {
@@ -31,7 +30,7 @@ const graphData: Record<string, any> = {
         type: "category",
         children: [
           {
-            name: "Role_1",
+            name: "Role_2",
             type: "role",
             users_count: 5,
             users_list: ["user1", "user2", "user3", "user4", "user5"],
@@ -41,7 +40,7 @@ const graphData: Record<string, any> = {
             },
             children: [
               {
-                name: "Role_2",
+                name: "Role_3",
                 type: "role",
                 users_count: 2,
                 users_list: ["user2", "user3"],
@@ -50,7 +49,7 @@ const graphData: Record<string, any> = {
                 },
                 children: [
                   {
-                    name: "Role_3",
+                    name: "Role_4",
                     type: "role",
                     users_count: 3,
                     users_list: ["user2", "user3", "user4"],
@@ -64,7 +63,7 @@ const graphData: Record<string, any> = {
                 ],
               },
               {
-                name: "Role_4",
+                name: "Role_5",
                 type: "role",
                 users_count: 1,
                 users_list: ["user5"],
