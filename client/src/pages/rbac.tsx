@@ -17,7 +17,7 @@ const rbacData = {
         objects: ["TESTDB.PUBLIC.ORDERS", "TESTDB.PUBLIC.CUSTOMERS"],
         privileges: ["SELECT", "UPDATE"],
         usage: {
-          credits_consumed: 3.5,
+          credits_consumed: 5.5,
           total_queries_fired: 120,
           total_data_processed_in_mb: 1850,
           bytes_written: 104857600,
@@ -35,7 +35,7 @@ const rbacData = {
         objects: ["TESTDB.PUBLIC.SALES"],
         privileges: ["INSERT"],
         usage: {
-          credits_consumed: 1.2,
+          credits_consumed: 3.8,
           total_queries_fired: 45,
           total_data_processed_in_mb: 760,
           bytes_written: 52428800,
@@ -53,7 +53,7 @@ const rbacData = {
         objects: ["TESTDB.ANALYTICS.REPORTS"],
         privileges: ["SELECT", "UPDATE", "DELETE"],
         usage: {
-          credits_consumed: 2.8,
+          credits_consumed: 2.4,
           total_queries_fired: 82,
           total_data_processed_in_mb: 990,
           bytes_written: 20971520,
