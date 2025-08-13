@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const users = ["API_USER", "AMITP", "VMAMIDI", "DEV_USER"];
+const daysOptions = [7, 15, 30];
 
 const rbacData = {
   API_USER: {
@@ -19,9 +20,9 @@ const rbacData = {
           total_queries_fired: 120,
           total_data_processed_in_mb: 1850,
           bytes_written: 104857600,
-          rows_inserted: 3000,
+          rows_inserted: 0,
           rows_updated: 1500,
-          rows_deleted: 500,
+          rows_deleted: 0,
           execution_time_ms: 985000,
           queued_overload_time_ms: 15000,
         },
@@ -86,8 +87,12 @@ const rbacData = {
 
 export default function RbacSection() {
   const [selectedUser, setSelectedUser] = useState("API_USER");
+  const [selectedDays, setSelectedDays] = useState(7);
 
   const data = rbacData[selectedUser];
+
+  // Filter roles by days - show roles only if user's days >= selectedDays
+  const filteredRoles = data.roles.filter(() => data.days >= selectedDays);
 
   return (
     <section className="space-y-6">
@@ -99,53 +104,74 @@ export default function RbacSection() {
           </p>
         </div>
 
-        <div className="p-6">
-          {/* User dropdown */}
-          <select
-            className="mb-6 px-3 py-1 text-sm rounded-md bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            value={selectedUser}
-            onChange={(e) => setSelectedUser(e.target.value)}
-            aria-label="Select user"
-            data-testid="user-select"
-          >
-            {users.map((user) => (
-              <option key={user} value={user}>
-                {user}
-              </option>
-            ))}
-          </select>
+        <div className="p-6 space-y-4">
+          {/* Filters container */}
+          <div className="flex items-center space-x-4">
+            {/* User dropdown */}
+            <select
+              className="px-4 py-2 text-sm rounded-md bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              aria-label="Select user"
+              data-testid="user-select"
+            >
+              {users.map((user) => (
+                <option key={user} value={user}>
+                  {user}
+                </option>
+              ))}
+            </select>
+
+            {/* Days dropdown */}
+            <select
+              className="px-4 py-2 text-sm rounded-md bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              value={selectedDays}
+              onChange={(e) => setSelectedDays(Number(e.target.value))}
+              aria-label="Select days filter"
+              data-testid="days-select"
+            >
+              {daysOptions.map((day) => (
+                <option key={day} value={day}>
+                  Last {day} days
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Roles Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ color: "var(--slate-400)", borderBottom: "1px solid var(--slate-700)" }}>
-                  <th className="text-left py-3">Role Name</th>
-                  <th className="text-left py-3">Grant Type</th>
-                  <th className="text-left py-3">Objects</th>
-                  <th className="text-left py-3">Privileges</th>
-                  <th className="text-left py-3">Credits Consumed</th>
-                  <th className="text-left py-3">Queries Fired</th>
-                  <th className="text-left py-3">Data Processed (MB)</th>
-                  <th className="text-left py-3">Rows Inserted</th>
-                  <th className="text-left py-3">Rows Updated</th>
-                  <th className="text-left py-3">Rows Deleted</th>
-                  <th className="text-left py-3">Execution Time (s)</th>
-                  <th className="text-left py-3">Queued Overload Time (s)</th>
+                  <th className="text-left py-4 px-4">Role Name</th>
+                  <th className="text-left py-4 px-4">Grant Type</th>
+                  <th className="text-left py-4 px-4">Objects</th>
+                  <th className="text-left py-4 px-4">Privileges</th>
+                  <th className="text-left py-4 px-4">Credits Consumed</th>
+                  <th className="text-left py-4 px-4">Queries Fired</th>
+                  <th className="text-left py-4 px-4">Data Processed (MB)</th>
+                  <th className="text-left py-4 px-4">Rows Inserted</th>
+                  <th className="text-left py-4 px-4">Rows Updated</th>
+                  <th className="text-left py-4 px-4">Rows Deleted</th>
+                  <th className="text-left py-4 px-4">Execution Time (s)</th>
                 </tr>
               </thead>
               <tbody style={{ color: "var(--slate-300)" }}>
-                {data.roles.length === 0 ? (
+                {filteredRoles.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="py-4 text-center text-slate-500 italic">
-                      No roles assigned for {selectedUser}
+                    <td colSpan={11} className="py-6 text-center text-slate-500 italic">
+                      No roles assigned for {selectedUser} in the last {selectedDays} days
                     </td>
                   </tr>
                 ) : (
-                  data.roles.map((role) => (
-                    <tr key={role.role_name} className="table-row" style={{ borderBottom: "1px solid var(--slate-800)" }}>
-                      <td className="py-3 font-semibold">{role.role_name}</td>
-                      <td className="py-3">
+                  filteredRoles.map((role) => (
+                    <tr
+                      key={role.role_name}
+                      className="table-row"
+                      style={{ borderBottom: "1px solid var(--slate-800)" }}
+                    >
+                      <td className="py-4 px-4 font-semibold">{role.role_name}</td>
+                      <td className="py-4 px-4">
                         <Badge
                           className={`text-xs ${
                             role.grant_type === "Direct_Role"
@@ -156,26 +182,25 @@ export default function RbacSection() {
                           {role.grant_type === "Direct_Role" ? "Direct" : "Inherited"}
                         </Badge>
                       </td>
-                      <td className="py-3">
+                      <td className="py-4 px-4">
                         {role.objects.map((obj, i) => (
                           <div key={i}>{obj}</div>
                         ))}
                       </td>
-                      <td className="py-3">
+                      <td className="py-4 px-4">
                         {role.privileges.map((priv, i) => (
                           <Badge key={i} className="text-xs bg-green-500/20 text-green-400 mr-1">
                             {priv}
                           </Badge>
                         ))}
                       </td>
-                      <td className="py-3">{role.usage.credits_consumed}</td>
-                      <td className="py-3">{role.usage.total_queries_fired.toLocaleString()}</td>
-                      <td className="py-3">{role.usage.total_data_processed_in_mb.toLocaleString()}</td>
-                      <td className="py-3">{role.usage.rows_inserted.toLocaleString()}</td>
-                      <td className="py-3">{role.usage.rows_updated.toLocaleString()}</td>
-                      <td className="py-3">{role.usage.rows_deleted.toLocaleString()}</td>
-                      <td className="py-3">{(role.usage.execution_time_ms / 1000).toFixed(1)}</td>
-                      <td className="py-3">{(role.usage.queued_overload_time_ms / 1000).toFixed(1)}</td>
+                      <td className="py-4 px-4">{role.usage.credits_consumed}</td>
+                      <td className="py-4 px-4">{role.usage.total_queries_fired.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.total_data_processed_in_mb.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.rows_inserted.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.rows_updated.toLocaleString()}</td>
+                      <td className="py-4 px-4">{role.usage.rows_deleted.toLocaleString()}</td>
+                      <td className="py-4 px-4">{(role.usage.execution_time_ms / 1000).toFixed(1)}</td>
                     </tr>
                   ))
                 )}
