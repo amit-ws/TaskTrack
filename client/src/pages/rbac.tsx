@@ -781,6 +781,8 @@ export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
   const [selectedUser, setSelectedUser] = useState("API_USER");
   const [selectedRoleForMapping, setSelectedRoleForMapping] = useState("ROLE_1");
+  const activeTabClass = "data-[state=active]:bg-sky-400 data-[state=active]:text-white data-[state=active]:font-bold";
+
 
   return (
     <Card className="backdrop-blur-md bg-black/80 border border-slate-800 rounded-xl shadow-2xl p-6">
@@ -792,12 +794,12 @@ export default function RBAC() {
       <CardContent>
         <Tabs defaultValue="orphaned-roles" className="w-full">
           <TabsList className="flex gap-2 mb-6 bg-black/40 border border-slate-800 rounded-lg p-1 justify-start">
-            <TabsTrigger value="orphaned-roles">🧩 Orphaned Roles</TabsTrigger>
-            <TabsTrigger value="high-risk-roles">🔥 High-Risk Roles</TabsTrigger>
-            <TabsTrigger value="user-permissions">🧭 User Permissions Mapping</TabsTrigger>
-            <TabsTrigger value="role-permissions">🔗 Role Permissions Mapping</TabsTrigger>
-            <TabsTrigger value="role-usage">📊 Role Usage</TabsTrigger>
-                        <TabsTrigger value="role-audit">⏱ Role Timeline Audit</TabsTrigger>
+            <TabsTrigger value="orphaned-roles" className={activeTabClass}>🧩 Orphaned Roles</TabsTrigger>
+            <TabsTrigger value="high-risk-roles" className={activeTabClass}>🔥 High-Risk Roles</TabsTrigger>
+            <TabsTrigger value="user-permissions" className={activeTabClass}>🧭 User Permissions Mapping</TabsTrigger>
+            <TabsTrigger value="role-permissions" className={activeTabClass}>🔗 Role Permissions Mapping</TabsTrigger>
+            <TabsTrigger value="role-usage" className={activeTabClass}>📊 Role Usage</TabsTrigger>
+            <TabsTrigger value="role-audit" className={activeTabClass}>⏱ Role Timeline Audit</TabsTrigger>
           </TabsList>
 
           {/* Tab Contents */}
