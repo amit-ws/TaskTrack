@@ -781,7 +781,7 @@ export default function RBAC() {
   const [selectedRole, setSelectedRole] = useState("ORGADMIN");
   const [selectedUser, setSelectedUser] = useState("API_USER");
   const [selectedRoleForMapping, setSelectedRoleForMapping] = useState("ROLE_1");
-  const activeTabClass = "data-[state=active]:bg-sky-400 data-[state=active]:text-white data-[state=active]:font-bold";
+const activeTabClass = "data-[state=active]:bg-[#0e7fb0] data-[state=active]:text-white data-[state=active]:font-bold";
 
 
   return (
