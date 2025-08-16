@@ -88,6 +88,45 @@ export default function ObjectUsageSection() {
     activeTab === "READ" ? obj.operationType === "READ" : obj.operationType !== "READ"
   ) || [];
 
+  // Mock data for READ Operations (formatted like MODIFY section)
+  const mockReadData = [
+    {
+      id: "1",
+      objectName: "user_data",
+      objectType: "Table",
+      operationType: "READ",
+      creditsConsumed: 120,
+      uniqueUsers: "VMAMIDI, API_USER, DEV_USER",
+      accessCount: 3000,
+      lastAccessed: "2025-08-14T15:30:00Z",
+      dataScanned: 15,
+    },
+    {
+      id: "2",
+      objectName: "order_info",
+      objectType: "View",
+      operationType: "READ",
+      creditsConsumed: 250,
+      uniqueUsers: "AMITP, VMAMIDI, API_USER",
+      accessCount: 4500,
+      lastAccessed: "2025-08-15T10:00:00Z",
+      dataScanned: 30,
+    },
+    {
+      id: "3",
+      objectName: "product_catalog",
+      objectType: "Table",
+      operationType: "READ",
+      creditsConsumed: 100,
+      uniqueUsers: "DEV_USER, AMITP, API_USER",
+      accessCount: 2000,
+      lastAccessed: "2025-08-12T08:45:00Z",
+      dataScanned: 10,
+    },
+  ];
+
+  const displayUsageData = activeTab === "READ" ? mockReadData : filteredUsage;
+
   return (
     <section className="space-y-6">
       <Card style={{ backgroundColor: "var(--slate-900)", borderColor: "var(--slate-700)" }}>
@@ -105,7 +144,7 @@ export default function ObjectUsageSection() {
             <button
               onClick={() => setActiveTab("READ")}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === "read" 
+                activeTab === "READ" 
                   ? "bg-cyan-600 text-white" 
                   : "text-slate-400 hover:text-white"
               }`}
@@ -127,13 +166,14 @@ export default function ObjectUsageSection() {
           </div>
 
           {/* READ Usage */}
-          {activeTab === "read" && (
+          {activeTab === "READ" && (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr style={{ color: "var(--slate-400)", borderBottom: "1px solid var(--slate-700)" }}>
                     <th className="text-left py-3">Object Name</th>
                     <th className="text-left py-3">Object Type</th>
+                    <th className="text-left py-3">Operation Type</th>
                     <th className="text-left py-3">Credits Consumed</th>
                     <th className="text-left py-3">Unique Users</th>
                     <th className="text-left py-3">Access Count</th>
@@ -142,12 +182,12 @@ export default function ObjectUsageSection() {
                   </tr>
                 </thead>
                 <tbody style={{ color: "var(--slate-300)" }}>
-                  {filteredUsage.map((usage) => (
+                  {displayUsageData.map((usage) => (
                     <tr key={usage.id} className="table-row" style={{ borderBottom: "1px solid var(--slate-800)" }}>
                       <td className="py-3">
                         <div className="flex items-center space-x-2">
                           {getObjectIcon(usage.objectType)}
-                          <span data-testid={`object-${usage.objectName}`}>{usage.objectName}</span>
+                          <span>{usage.objectName}</span>
                         </div>
                       </td>
                       <td className="py-3">
@@ -156,11 +196,16 @@ export default function ObjectUsageSection() {
                         </Badge>
                       </td>
                       <td className="py-3">
+                        <Badge className={`text-xs ${getOperationTypeBadge(usage.operationType || "")}`}>
+                          {usage.operationType}
+                        </Badge>
+                      </td>
+                      <td className="py-3">
                         <span className="font-semibold" style={{ color: "var(--amber-400)" }}>
                           {usage.creditsConsumed}
                         </span>
                       </td>
-                      <td className="py-3">
+                                            <td className="py-3">
                         {usage.uniqueUsers && renderUniqueUsers(usage.uniqueUsers)}
                       </td>
                       <td className="py-3">{usage.accessCount?.toLocaleString()}</td>
@@ -232,3 +277,5 @@ export default function ObjectUsageSection() {
     </section>
   );
 }
+
+                     
