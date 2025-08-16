@@ -39,7 +39,9 @@ export default function ObjectUsageSection() {
       "INSERT": "bg-orange-500/20 text-orange-400",
       "UPDATE": "bg-yellow-500/20 text-yellow-400",
       "DELETE": "bg-red-500/20 text-red-400",
-      "SELECT": "bg-blue-500/20 text-blue-400",
+      // "SELECT": "bg-blue-500/20 text-blue-400",
+      "SELECT": "bg-[#cc0c5f]/20 text-[#cc0c5f]",
+
     };
     return colors[operationType as keyof typeof colors] || "bg-slate-500/20 text-slate-400";
   };
