@@ -24,9 +24,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 import { Badge } from "@/components/ui/badge";
+import { Trash2, Shield } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
 
 // -------------- Existing Data and Helpers --------------
 const orphanedRoles = [
@@ -463,6 +477,79 @@ const actionColors: Record<string, string> = {
 
 const daysToMilliseconds = (days: number) => days * 24 * 60 * 60 * 1000;
 
+function OrphanedRolesSection({ orphanedRoles }: { orphanedRoles: any[] }) {
+  if (!orphanedRoles || orphanedRoles.length === 0) {
+    return (
+      <Card className="bg-black/40 border border-slate-800 text-slate-300">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-white">
+            Orphaned Roles
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 text-center text-slate-400">
+          🎉 No orphaned roles found
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="bg-black/40 border border-slate-800 text-slate-300">
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold text-white">
+          Orphaned Roles
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {orphanedRoles.map((role) => (
+          <div
+            key={role.roleName}
+            className="flex items-center justify-between p-4 bg-slate-900/60 rounded-xl border border-slate-800 hover:bg-slate-900/80 transition"
+          >
+            <div className="flex items-center gap-3">
+              <Shield className="w-5 h-5 text-sky-400" />
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-medium">{role.roleName}</span>
+                  <Badge className="bg-sky-600/20 text-sky-400">Orphaned</Badge>
+                </div>
+                <div className="text-xs text-slate-400">
+                  Created by: {role.createdBy} · {new Date(role.createdAt).toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            {/* Delete Action with Confirmation */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="gap-2">
+                  <Trash2 className="w-4 h-4" /> Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Delete role "{role.roleName}"?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. The role will be permanently removed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="bg-red-600 hover:bg-red-700">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 function RoleAuditSection() {
   const [selectedRole, setSelectedRole] = useState("ROLE1");
   const [selectedDays, setSelectedDays] = useState(-1); // All Time
@@ -804,7 +891,7 @@ const activeTabClass = "data-[state=active]:bg-[#0e7fb0] data-[state=active]:tex
 
           {/* Tab Contents */}
                     {/* Orphaned Roles */}
-     <TabsContent value="orphaned-roles">
+     {/* <TabsContent value="orphaned-roles">
             <div className="overflow-auto rounded-lg border border-slate-700">
               <table className="min-w-full bg-black text-slate-200 text-xs">
                 <thead className="uppercase bg-slate-900 text-slate-400 border-b border-slate-700">
@@ -837,7 +924,11 @@ const activeTabClass = "data-[state=active]:bg-[#0e7fb0] data-[state=active]:tex
                 </tbody>
               </table>
             </div>
+          </TabsContent> */}
+          <TabsContent value="orphaned-roles">
+              <OrphanedRolesSection orphanedRoles={orphanedRolesData} />
           </TabsContent>
+
 
           {/* High-Risk Roles */}
           <TabsContent value="high-risk-roles">
