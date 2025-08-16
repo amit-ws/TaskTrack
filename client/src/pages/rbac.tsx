@@ -475,6 +475,19 @@ const actionColors: Record<string, string> = {
 };
 
 
+const orphanedRoles = [
+  { roleName: "ADMIN", roleType: "INSTANCE ROLE", createdBy: "VMAMIDI", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "DEVELOPER", roleType: "INSTANCE ROLE", createdBy: "API_USER", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "ENGINEER", roleType: "INSTANCE ROLE", createdBy: "DEV_USER", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "READER", roleType: "INSTANCE ROLE", createdBy: "AMITP", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "VIEWER", roleType: "INSTANCE ROLE", createdBy: "VMAMIDI", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "USER", roleType: "INSTANCE ROLE", createdBy: "API_USER", creationDate: "Jul 28, 2025, 12:38 PM" },
+  { roleName: "SAMPLE ROLE 1", roleType: "ROLE", createdBy: "DEV_USER", creationDate: "Aug 3, 2025, 1:34 PM" },
+  { roleName: "TEST ROLE 1", roleType: "ROLE", createdBy: "AMITP", creationDate: "Aug 3, 2025, 11:18 PM" },
+];
+
+
+
 const daysToMilliseconds = (days: number) => days * 24 * 60 * 60 * 1000;
 
 function OrphanedRolesSection({ orphanedRoles }: { orphanedRoles: any[] }) {
