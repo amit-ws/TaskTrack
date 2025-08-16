@@ -39,7 +39,7 @@ export default function ObjectUsageSection() {
       "INSERT": "bg-orange-500/20 text-orange-400",
       "UPDATE": "bg-yellow-500/20 text-yellow-400",
       "DELETE": "bg-red-500/20 text-red-400",
-      "READ": "bg-blue-500/20 text-blue-400",
+      "SELECT": "bg-blue-500/20 text-blue-400",
     };
     return colors[operationType as keyof typeof colors] || "bg-slate-500/20 text-slate-400";
   };
@@ -92,9 +92,9 @@ export default function ObjectUsageSection() {
   const mockReadData = [
     {
       id: "1",
-      objectName: "user_data",
+      objectName: "CUSTOMERS_DATA",
       objectType: "Table",
-      operationType: "READ",
+      operationType: "SELECT",
       creditsConsumed: 120,
       uniqueUsers: "VMAMIDI, API_USER, DEV_USER",
       accessCount: 3000,
@@ -103,9 +103,9 @@ export default function ObjectUsageSection() {
     },
     {
       id: "2",
-      objectName: "order_info",
+      objectName: "ORDERS_SUMMARY",
       objectType: "View",
-      operationType: "READ",
+      operationType: "SELECT",
       creditsConsumed: 250,
       uniqueUsers: "AMITP, VMAMIDI, API_USER",
       accessCount: 4500,
@@ -114,15 +114,37 @@ export default function ObjectUsageSection() {
     },
     {
       id: "3",
-      objectName: "product_catalog",
+      objectName: "PRODUCTS_CATALOG",
       objectType: "Table",
-      operationType: "READ",
+      operationType: "SELECT",
       creditsConsumed: 100,
       uniqueUsers: "DEV_USER, AMITP, API_USER",
       accessCount: 2000,
       lastAccessed: "2025-08-12T08:45:00Z",
       dataScanned: 10,
     },
+    {
+    id: "4",
+    objectName: "CALCULATE_TAX",
+    objectType: "Procedure",
+    operationType: "SELECT",
+    creditsConsumed: 180,
+    uniqueUsers: "VMAMIDI, AMITP",
+    accessCount: 5000,
+    lastAccessed: "2025-08-13T11:15:00Z",
+    dataScanned: 5,
+  },
+  {
+    id: "5",
+    objectName: "GENERATE_SALES_REPORT",
+    objectType: "Procedure",
+    operationType: "SELECT",
+    creditsConsumed: 220,
+    uniqueUsers: "API_USER, DEV_USER",
+    accessCount: 4000,
+    lastAccessed: "2025-08-16T09:00:00Z",
+    dataScanned: 8,
+  },
   ];
 
   const displayUsageData = activeTab === "READ" ? mockReadData : filteredUsage;
