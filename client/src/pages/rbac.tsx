@@ -503,11 +503,6 @@ function OrphanedRolesSection({ orphanedRolesList }: { orphanedRolesList: any[] 
 
   return (
     <Card className="bg-black/40 border border-slate-800 text-slate-300">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-white">
-          Orphaned Roles
-        </CardTitle>
-      </CardHeader>
       <CardContent className="space-y-4">
         {orphanedRolesList.map((role) => (
           <div
@@ -518,12 +513,13 @@ function OrphanedRolesSection({ orphanedRolesList }: { orphanedRolesList: any[] 
             <div className="flex items-center gap-3">
               <Shield className="w-5 h-5 text-sky-400" />
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium">{role.roleName}</span>
-                  <Badge className="bg-sky-600/20 text-sky-400">Orphaned</Badge>
-                </div>
-                <div className="text-xs text-slate-400">
-                  Created by: <span className="text-slate-300">{role.createdBy}</span> ·{" "}
+                {/* Role Name */}
+                <div className="text-white font-medium">{role.roleName}</div>
+
+                {/* Created by info */}
+                <div className="text-xs text-slate-400 py-2">
+                  Created by:{" "}
+                  <span className="text-sky-300 font-medium">{role.createdBy}</span> ·{" "}
                   <span className="text-slate-300">{role.creationDate}</span>
                 </div>
               </div>
