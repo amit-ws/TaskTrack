@@ -43,16 +43,16 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 
 // -------------- Existing Data and Helpers --------------
-const orphanedRoles = [
-  { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
-  { roleName: "DEVELOPER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
-  { roleName: "ENGINEER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
-  { roleName: "READER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
-  { roleName: "VIEWER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
-  { roleName: "USER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
-  { roleName: "SAMPLE ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 1:34 PM" },
-  { roleName: "TEST ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 11:18 PM" },
-];
+// const orphanedRoles = [
+//   { roleName: "ADMIN", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+//   { roleName: "DEVELOPER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+//   { roleName: "ENGINEER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+//   { roleName: "READER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+//   { roleName: "VIEWER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+//   { roleName: "USER", roleType: "INSTANCE ROLE", creationDate: "Jul 28, 2025, 12:38 PM" },
+//   { roleName: "SAMPLE ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 1:34 PM" },
+//   { roleName: "TEST ROLE 1", roleType: "ROLE", creationDate: "Aug 3, 2025, 11:18 PM" },
+// ];
 
 const highRiskRoleNames = ["Select Role", "ACCOUNTADMIN", "ORGADMIN", "SECURITYADMIN", "SYSADMIN", "USERADMIN"];
 
@@ -475,7 +475,7 @@ const actionColors: Record<string, string> = {
 };
 
 
-const orphanedRoles = [
+const orphanedRolesList = [
   { roleName: "ADMIN", roleType: "INSTANCE ROLE", createdBy: "VMAMIDI", creationDate: "Jul 28, 2025, 12:38 PM" },
   { roleName: "DEVELOPER", roleType: "INSTANCE ROLE", createdBy: "API_USER", creationDate: "Jul 28, 2025, 12:38 PM" },
   { roleName: "ENGINEER", roleType: "INSTANCE ROLE", createdBy: "DEV_USER", creationDate: "Jul 28, 2025, 12:38 PM" },
@@ -490,8 +490,8 @@ const orphanedRoles = [
 
 const daysToMilliseconds = (days: number) => days * 24 * 60 * 60 * 1000;
 
-function OrphanedRolesSection({ orphanedRoles }: { orphanedRoles: any[] }) {
-  if (!orphanedRoles || orphanedRoles.length === 0) {
+function OrphanedRolesSection({ orphanedRolesList }: { orphanedRolesList: any[] }) {
+  if (!orphanedRolesList || orphanedRolesList.length === 0) {
     return (
       <Card className="bg-black/40 border border-slate-800 text-slate-300">
         <CardHeader>
@@ -514,11 +514,12 @@ function OrphanedRolesSection({ orphanedRoles }: { orphanedRoles: any[] }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {orphanedRoles.map((role) => (
+        {orphanedRolesList.map((role) => (
           <div
             key={role.roleName}
             className="flex items-center justify-between p-4 bg-slate-900/60 rounded-xl border border-slate-800 hover:bg-slate-900/80 transition"
           >
+            {/* Left side: Icon + Role info */}
             <div className="flex items-center gap-3">
               <Shield className="w-5 h-5 text-sky-400" />
               <div>
@@ -527,12 +528,13 @@ function OrphanedRolesSection({ orphanedRoles }: { orphanedRoles: any[] }) {
                   <Badge className="bg-sky-600/20 text-sky-400">Orphaned</Badge>
                 </div>
                 <div className="text-xs text-slate-400">
-                  Created by: {role.createdBy} · {new Date(role.createdAt).toLocaleString()}
+                  Created by: <span className="text-slate-300">{role.createdBy}</span> ·{" "}
+                  <span className="text-slate-300">{role.creationDate}</span>
                 </div>
               </div>
             </div>
 
-            {/* Delete Action with Confirmation */}
+            {/* Right side: Delete Action */}
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm" className="gap-2">
@@ -562,6 +564,7 @@ function OrphanedRolesSection({ orphanedRoles }: { orphanedRoles: any[] }) {
     </Card>
   );
 }
+
 
 function RoleAuditSection() {
   const [selectedRole, setSelectedRole] = useState("ROLE1");
@@ -938,9 +941,12 @@ const activeTabClass = "data-[state=active]:bg-[#0e7fb0] data-[state=active]:tex
               </table>
             </div>
           </TabsContent> */}
-          <TabsContent value="orphaned-roles">
-              <OrphanedRolesSection orphanedRoles={orphanedRolesData} />
-          </TabsContent>
+        <TabsContent value="orphaned-roles">
+          <OrphanedRolesSection orphanedRoles={orphanedRolesList} />
+        </TabsContent>
+
+
+
 
 
           {/* High-Risk Roles */}
