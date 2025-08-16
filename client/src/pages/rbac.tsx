@@ -494,11 +494,6 @@ function OrphanedRolesSection({ orphanedRolesList }: { orphanedRolesList: any[] 
   if (!orphanedRolesList || orphanedRolesList.length === 0) {
     return (
       <Card className="bg-black/40 border border-slate-800 text-slate-300">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-white">
-            Orphaned Roles
-          </CardTitle>
-        </CardHeader>
         <CardContent className="p-6 text-center text-slate-400">
           🎉 No orphaned roles found
         </CardContent>
@@ -941,8 +936,10 @@ const activeTabClass = "data-[state=active]:bg-[#0e7fb0] data-[state=active]:tex
               </table>
             </div>
           </TabsContent> */}
+
+
         <TabsContent value="orphaned-roles">
-          <OrphanedRolesSection orphanedRoles={orphanedRolesList} />
+          <OrphanedRolesSection orphanedRolesList={orphanedRolesList} />
         </TabsContent>
 
 
